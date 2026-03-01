@@ -8,8 +8,8 @@ public class AiService
 
     public AiService(HttpClient httpClient)
     {
+        ArgumentNullException.ThrowIfNull(httpClient);
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri("http://localhost:11434");
     }
 
     private class OllamaRequest
@@ -27,18 +27,20 @@ public class AiService
         public bool done { get; set; }
     }
 
-    public async Task<string> AskAsync(string prompt)
+    public async Task<string> AskAsync(string prompt, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(prompt);
+
         var request = new OllamaRequest
         {
             prompt = prompt,
             stream = false
         };
 
-        var response = await _httpClient.PostAsJsonAsync("/api/generate", request);
+        var response = await _httpClient.PostAsJsonAsync("/api/generate", request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<OllamaResponse>();
+        var result = await response.Content.ReadFromJsonAsync<OllamaResponse>(cancellationToken);
         return result?.response ?? string.Empty;
     }
 }

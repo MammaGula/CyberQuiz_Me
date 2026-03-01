@@ -19,15 +19,24 @@ public class AiController : ControllerBase
     }
 
     [HttpPost("chat")]
-    public async Task<ActionResult<AiChatResponseDto>> Chat([FromBody] AiChatRequestDto req)
+	public async Task<ActionResult<AiChatResponseDto>> Chat([FromBody] AiChatRequestDto req, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+		if (req is null)
+		{
+			return BadRequest("Request body is required.");
+		}
+
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (string.IsNullOrWhiteSpace(userId))
+		{
+			return Unauthorized("User identity not found.");
+		}
 
         var finalPrompt = req.Context is null
             ? req.Prompt
             : $"UserId: {userId}\nContext (quiz): {req.Context}\n\nUser question: {req.Prompt}";
 
-        var answer = await _ai.AskAsync(finalPrompt);
+		var answer = await _ai.AskAsync(finalPrompt, cancellationToken);
 
         return Ok(new AiChatResponseDto
         {
@@ -36,9 +45,18 @@ public class AiController : ControllerBase
     }
 
     [HttpPost("coach")]
-    public async Task<ActionResult<AiCoachResponseDto>> Coach([FromBody] AiCoachRequestDto req)
+	public async Task<ActionResult<AiCoachResponseDto>> Coach([FromBody] AiCoachRequestDto req, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+		if (req is null)
+		{
+			return BadRequest("Request body is required.");
+		}
+
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (string.IsNullOrWhiteSpace(userId))
+		{
+			return Unauthorized("User identity not found.");
+		}
 
         var prompt =
             $"Du är en personlig cybersäkerhetscoach.\n" +
@@ -46,7 +64,7 @@ public class AiController : ControllerBase
             $"Quiz summary: {req.Summary}\n\n" +
             "Analysera styrkor och svagheter och ge konkreta rekommendationer på svenska.";
 
-        var feedback = await _ai.AskAsync(prompt);
+		var feedback = await _ai.AskAsync(prompt, cancellationToken);
 
         return Ok(new AiCoachResponseDto
         {

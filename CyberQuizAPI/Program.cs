@@ -1,7 +1,10 @@
+using CyberQuiz.BLL.Interfaces;
+using CyberQuiz.BLL.Services;
 using CyberQuiz.DAL.Data;
 using CyberQuiz.DAL.Entities;
 using CyberQuiz.DAL.Repositories;
 using CyberQuiz.DAL.Repositories.Interfaces;
+using CyberQuiz.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,6 +78,24 @@ builder.Services.AddCors(options =>
 });
 
 
+// -----------------------------
+// 6.1 Register HttpClients
+// -----------------------------
+builder.Services.AddHttpClient<AiService>(client =>
+{
+    var baseUrl = builder.Configuration["Ai:BaseUrl"];
+    if (!string.IsNullOrWhiteSpace(baseUrl))
+    {
+        client.BaseAddress = new Uri(baseUrl);
+    }
+
+    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
+    {
+        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+    }
+});
+
+
 
 // -----------------------------
 // 7. Register Repositories + UnitOfWork
@@ -85,6 +106,11 @@ builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerOptionRepository, AnswerOptionRepository>();
 builder.Services.AddScoped<IUserResultRepository, UserResultRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// -----------------------------
+// 7.1 Register BLL services
+// -----------------------------
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 var app = builder.Build();
 
