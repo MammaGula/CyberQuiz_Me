@@ -12,6 +12,7 @@ public class CategoryRepository : ICategoryRepository
 
     public CategoryRepository(CyberQuizDbContext db)
     {
+		ArgumentNullException.ThrowIfNull(db);
         _db = db;
     }
 
@@ -19,12 +20,14 @@ public class CategoryRepository : ICategoryRepository
     public async Task<List<Category>> GetAllAsync()
         => await _db.Categories
             .AsNoTracking()
+            .OrderBy(c => c.Id)
             .ToListAsync();
 
     // Returns all categories including their related subcategories
     public async Task<List<Category>> GetAllWithSubCategoriesAsync(CancellationToken cancellationToken = default)
         => await _db.Categories
             .AsNoTracking()
+            .OrderBy(c => c.Id)
             .Include(c => c.SubCategories)
             .AsSplitQuery()
             .ToListAsync(cancellationToken);
@@ -34,8 +37,14 @@ public class CategoryRepository : ICategoryRepository
         => await _db.Categories.FindAsync(id);
 
     public async Task AddAsync(Category category)
-        => await _db.Categories.AddAsync(category);
+	{
+		ArgumentNullException.ThrowIfNull(category);
+		await _db.Categories.AddAsync(category);
+	}
 
     public void Remove(Category category)
-        => _db.Categories.Remove(category);
+	{
+		ArgumentNullException.ThrowIfNull(category);
+		_db.Categories.Remove(category);
+	}
 }

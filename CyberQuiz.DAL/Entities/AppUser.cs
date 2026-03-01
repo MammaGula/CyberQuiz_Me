@@ -7,7 +7,7 @@ namespace CyberQuiz.DAL.Entities;
 public class AppUser : IdentityUser
 {
     [MaxLength(200)]
-    public string FullName { get; set; } 
+	public string FullName { get; set; } = string.Empty;
     public DateTime LastLogIn { get; set; }
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 

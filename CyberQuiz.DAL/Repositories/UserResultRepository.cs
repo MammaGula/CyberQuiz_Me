@@ -13,6 +13,7 @@ public class UserResultRepository : IUserResultRepository
 
     public UserResultRepository(CyberQuizDbContext db)
     {
+        ArgumentNullException.ThrowIfNull(db);
         _db = db;
     }
 
@@ -21,6 +22,7 @@ public class UserResultRepository : IUserResultRepository
     public async Task<List<UserResult>> GetAllAsync()
         => await _db.UserResults
             .AsNoTracking()
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
 
@@ -31,18 +33,35 @@ public class UserResultRepository : IUserResultRepository
 
     // Returns the latest UserResult per QuestionId for a specific user
     public async Task<List<UserResult>> GetLatestResultsForUserAndQuestionIdsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default)
-        => await _db.UserResults
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentNullException.ThrowIfNull(questionIds);
+
+        var questionIdArray = questionIds.Distinct().ToArray();
+        if (questionIdArray.Length == 0)
+        {
+            return new List<UserResult>();
+        }
+
+        return await _db.UserResults
             .AsNoTracking()
-            .Where(r => r.UserId == userId && questionIds.Contains(r.QuestionId)) // Filter by userId and questionIds
-            .GroupBy(r => r.QuestionId)                                         
-            .Select(g => g.OrderByDescending(x => x.Id).First())    // Each group chooses the latest result for a question
+            .Where(r => r.UserId == userId && questionIdArray.Contains(r.QuestionId))
+            .GroupBy(r => r.QuestionId)
+            .Select(g => g.OrderByDescending(x => x.Id).First())
             .ToListAsync(cancellationToken);
+    }
 
     // Adds a new UserResult to the database, but does not save changes (SaveChanges is called in UnitOfWork)
     public async Task AddAsync(UserResult result)
-        => await _db.UserResults.AddAsync(result);
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        await _db.UserResults.AddAsync(result);
+    }
 
-    // Marks an existing UserResult as modified, so that it will be updated in the database when SaveChanges is called
+    // Removes an existing UserResult, so that it will be deleted from the database when SaveChanges is called
     public void Remove(UserResult result)
-        => _db.UserResults.Remove(result);
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        _db.UserResults.Remove(result);
+    }
 }

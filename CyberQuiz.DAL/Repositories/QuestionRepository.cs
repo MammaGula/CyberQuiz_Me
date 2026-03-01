@@ -21,6 +21,8 @@ public class QuestionRepository : IQuestionRepository
     public async Task<List<Question>> GetAllAsync()
         => await _db.Questions
             .AsNoTracking()
+            .OrderBy(q => q.SubCategoryId)
+            .ThenBy(q => q.Id)
             .ToListAsync();
 
     // Returns 1 question with given id, or null if not found

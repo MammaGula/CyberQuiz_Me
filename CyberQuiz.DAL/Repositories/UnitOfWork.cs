@@ -34,13 +34,19 @@ public class UnitOfWork : IUnitOfWork
         IAnswerOptionRepository answerOptions,
         IUserResultRepository userResults)
     {
-        _db = db;
+		ArgumentNullException.ThrowIfNull(db);
+		ArgumentNullException.ThrowIfNull(categories);
+		ArgumentNullException.ThrowIfNull(subCategories);
+		ArgumentNullException.ThrowIfNull(questions);
+		ArgumentNullException.ThrowIfNull(answerOptions);
+		ArgumentNullException.ThrowIfNull(userResults);
 
-        Categories = categories;
-        SubCategories = subCategories;
-        Questions = questions;
-        AnswerOptions = answerOptions;
-        UserResults = userResults;
+		_db = db;
+		Categories = categories;
+		SubCategories = subCategories;
+		Questions = questions;
+		AnswerOptions = answerOptions;
+		UserResults = userResults;
     }
 
 

@@ -1,6 +1,8 @@
 ﻿using CyberQuiz.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 namespace CyberQuiz.DAL.Data;
 
@@ -11,16 +13,20 @@ public static class DbSeeder
         UserManager<AppUser> userManager,
         RoleManager<IdentityRole> roleManager)
     {
-        // 1. Ensure database is created and up-to-date
-        await db.Database.MigrateAsync();
+        ArgumentNullException.ThrowIfNull(db);
+        ArgumentNullException.ThrowIfNull(userManager);
+        ArgumentNullException.ThrowIfNull(roleManager);
 
-        // 2. Seed Identity Roles (User, Admin)
+		// Ensure the host applies migrations before calling the seeder.
+		// (Avoid doing db.Database.MigrateAsync() here to keep seeding and schema management separate.)
+
+		// 1. Seed Identity Roles (User, Admin)
         await SeedRolesAsync(roleManager);
 
-        // 3. Seed Default Users (user, admin) using transaction logic if needed
+		// 2. Seed Default Users (user, admin) using transaction logic if needed
         await SeedUsersAsync(userManager);
 
-        // 4. Seed Quiz Content (Categories, SubCategories, Questions, Answers)
+		// 3. Seed Quiz Content (Categories, SubCategories, Questions, Answers)
         await SeedQuizDataAsync(db);
     }
 
@@ -32,7 +38,8 @@ public static class DbSeeder
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                var result = await roleManager.CreateAsync(new IdentityRole(role));
+                EnsureSucceeded(result, $"Failed to create role '{role}'.");
             }
         }
     }
@@ -55,10 +62,10 @@ public static class DbSeeder
                 FullName = "Regular User"
             };
             var result = await userManager.CreateAsync(user, "Password1234!");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, "User");
-            }
+            EnsureSucceeded(result, "Failed to create default user 'user'.");
+
+            var roleResult = await userManager.AddToRoleAsync(user, "User");
+            EnsureSucceeded(roleResult, "Failed to assign role 'User' to default user 'user'.");
         }
 
         // Seed admin user
@@ -72,10 +79,10 @@ public static class DbSeeder
                 FullName = "System Administrator"
             };
             var result = await userManager.CreateAsync(admin, "Admin1234!");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Admin");
-            }
+            EnsureSucceeded(result, "Failed to create default user 'admin'.");
+
+            var roleResult = await userManager.AddToRoleAsync(admin, "Admin");
+            EnsureSucceeded(roleResult, "Failed to assign role 'Admin' to default user 'admin'.");
         }
     }
 
@@ -89,7 +96,7 @@ public static class DbSeeder
     private static async Task SeedQuizDataAsync(CyberQuizDbContext db)
     {
         // Check if data already exists to avoid duplication
-        if (await db.Categories.AnyAsync(c => c.Name == ".NET Web Development"))
+        if (await db.Categories.AnyAsync())
         {
             return; // Data already seeded
         }
@@ -437,5 +444,16 @@ public static class DbSeeder
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    private static void EnsureSucceeded(IdentityResult result, string message)
+    {
+        if (result.Succeeded)
+        {
+            return;
+        }
+
+        var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
+        throw new InvalidOperationException($"{message} Errors: {errors}");
     }
 }
