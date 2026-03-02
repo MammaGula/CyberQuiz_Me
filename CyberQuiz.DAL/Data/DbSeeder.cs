@@ -23,8 +23,8 @@ public static class DbSeeder
 		// 1. Seed Identity Roles (User, Admin)
         await SeedRolesAsync(roleManager);
 
-		// 2. Seed Default Users (user, admin) using transaction logic if needed
-        await SeedUsersAsync(userManager);
+        // 3. Seed Default Users (user, admin) using transaction logic if needed
+        //await SeedUsersAsync(userManager);
 
 		// 3. Seed Quiz Content (Categories, SubCategories, Questions, Answers)
         await SeedQuizDataAsync(db);
@@ -49,42 +49,42 @@ public static class DbSeeder
     //========================
     // SEED USER & ADMIN
     //========================
-    private static async Task SeedUsersAsync(UserManager<AppUser> userManager)
-    {
-        // Seed regular user
-        if (await userManager.FindByNameAsync("user") == null)
-        {
-            var user = new AppUser
-            {
-                UserName = "user",
-                Email = "user@example.com",
-                EmailConfirmed = true,
-                FullName = "Regular User"
-            };
-            var result = await userManager.CreateAsync(user, "Password1234!");
-            EnsureSucceeded(result, "Failed to create default user 'user'.");
+    //private static async Task SeedUsersAsync(UserManager<AppUser> userManager)
+    //{
+    //    // Seed regular user
+    //    if (await userManager.FindByNameAsync("user") == null)
+    //    {
+    //        var user = new AppUser
+    //        {
+    //            UserName = "user",
+    //            Email = "user@example.com",
+    //            EmailConfirmed = true,
+    //            FullName = "Regular User"
+    //        };
+    //        var result = await userManager.CreateAsync(user, "Password1234!");
+    //        if (result.Succeeded)
+    //        {
+    //            await userManager.AddToRoleAsync(user, "User");
+    //        }
+    //    }
 
-            var roleResult = await userManager.AddToRoleAsync(user, "User");
-            EnsureSucceeded(roleResult, "Failed to assign role 'User' to default user 'user'.");
-        }
-
-        // Seed admin user
-        if (await userManager.FindByNameAsync("admin") == null)
-        {
-            var admin = new AppUser
-            {
-                UserName = "admin",
-                Email = "admin@cyberquiz.com",
-                EmailConfirmed = true,
-                FullName = "System Administrator"
-            };
-            var result = await userManager.CreateAsync(admin, "Admin1234!");
-            EnsureSucceeded(result, "Failed to create default user 'admin'.");
-
-            var roleResult = await userManager.AddToRoleAsync(admin, "Admin");
-            EnsureSucceeded(roleResult, "Failed to assign role 'Admin' to default user 'admin'.");
-        }
-    }
+    //    // Seed admin user
+    //    if (await userManager.FindByNameAsync("admin") == null)
+    //    {
+    //        var admin = new AppUser
+    //        {
+    //            UserName = "admin",
+    //            Email = "admin@cyberquiz.com",
+    //            EmailConfirmed = true,
+    //            FullName = "System Administrator"
+    //        };
+    //        var result = await userManager.CreateAsync(admin, "Admin1234!");
+    //        if (result.Succeeded)
+    //        {
+    //            await userManager.AddToRoleAsync(admin, "Admin");
+    //        }
+    //    }
+    //}
 
 
 
