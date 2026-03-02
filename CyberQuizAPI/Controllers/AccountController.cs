@@ -33,15 +33,14 @@ public class AccountController : ControllerBase
 
     public sealed record LoginDto([Required] string UserName, [Required] string Password, bool RememberMe = false);
     public sealed record UserDto(string Id, string? UserName);
+    public sealed record AuthErrorDto(string Code);
 
     // POST: api/account/login
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status423Locked)]
     public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto dto)
     {
         // Model validation is handled by [ApiController] and data annotations on LoginDto
@@ -51,26 +50,22 @@ public class AccountController : ControllerBase
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("Login blocked due to lockout for user {UserName}", dto.UserName);
-                return StatusCode(StatusCodes.Status423Locked);
             }
-
-            if (result.IsNotAllowed)
-            {
-                _logger.LogWarning("Login not allowed for user {UserName}", dto.UserName);
-                return Forbid();
-            }
-
-            if (result.RequiresTwoFactor)
+            else if (result.RequiresTwoFactor)
             {
                 _logger.LogWarning("Login requires two-factor authentication for user {UserName}", dto.UserName);
-                return StatusCode(StatusCodes.Status403Forbidden, new { code = "requires_two_factor" });
+            }
+            else if (result.IsNotAllowed)
+            {
+                _logger.LogWarning("Login not allowed for user {UserName}", dto.UserName);
             }
             else
             {
                 _logger.LogWarning("Failed login attempt for user {UserName}", dto.UserName);
             }
 
-            return Unauthorized();
+            // Avoid leaking account state (lockout/2FA/not-allowed) via response codes.
+            return Unauthorized(new AuthErrorDto("auth_failed"));
         }
 
         // Retrieve user to return minimal profile information for UI
@@ -89,7 +84,7 @@ public class AccountController : ControllerBase
 
     // POST: api/account/logout
     [HttpPost("logout")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Logout()
     {
@@ -105,7 +100,7 @@ public class AccountController : ControllerBase
             _logger.LogInformation("Logout called without a resolved user id");
         }
 
-        return Ok();
+        return NoContent();
     }
 
     // GET: api/account/me
