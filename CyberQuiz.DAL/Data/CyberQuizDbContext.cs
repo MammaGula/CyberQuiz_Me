@@ -11,6 +11,7 @@ public class CyberQuizDbContext : IdentityDbContext<AppUser>
     public CyberQuizDbContext(DbContextOptions<CyberQuizDbContext> options)
        : base(options)
     {
+		ArgumentNullException.ThrowIfNull(options);
     }
 
     // DbSets for our entities
@@ -91,9 +92,10 @@ public class CyberQuizDbContext : IdentityDbContext<AppUser>
         builder.Entity<AnswerOption>()
             .HasIndex(a => new { a.QuestionId, a.DisplayOrder });
 
-        // Index for User History lookups (faster profile/progression queries)
-        builder.Entity<UserResult>()
-            .HasIndex(u => new { u.UserId, u.AnsweredAt });
+
+        //// Index for User History lookups (faster profile/progression queries)
+        //builder.Entity<UserResult>()
+        //    .HasIndex(u => new { u.UserId, u.AnsweredAt });
     }
 }
 

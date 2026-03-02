@@ -1,59 +1,77 @@
-﻿//using System.Security.Claims;
-//using CyberQuiz.API.Services;
-//using CyberQuiz.Shared.AI;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using CyberQuiz.API.Services;
+using CyberQuiz.Shared.AI;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace CyberQuiz.API.Controllers;
+namespace CyberQuiz.API.Controllers;
 
-//[ApiController]
-//[Route("api/[controller]")]
-//[Authorize]
-//public class AiController : ControllerBase
-//{
-//    private readonly AiService _ai;
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class AiController : ControllerBase
+{
+    private readonly AiService _ai;
 
-//    public AiController(AiService ai)
-//    {
-//        _ai = ai;
-//    }
+    public AiController(AiService ai)
+    {
+        _ai = ai;
+    }
 
-//    [HttpPost("chat")]
-//    public async Task<ActionResult<AiChatResponseDto>> Chat([FromBody] AiChatRequestDto req)
-//    {
-//        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    [HttpPost("chat")]
+	public async Task<ActionResult<AiChatResponseDto>> Chat([FromBody] AiChatRequestDto req, CancellationToken cancellationToken)
+    {
+		if (req is null)
+		{
+			return BadRequest("Request body is required.");
+		}
 
-//        var finalPrompt = req.Context is null
-//            ? req.Prompt
-//            : $"UserId: {userId}\nContext (quiz): {req.Context}\n\nUser question: {req.Prompt}";
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (string.IsNullOrWhiteSpace(userId))
+		{
+			return Unauthorized("User identity not found.");
+		}
 
-//        var answer = await _ai.AskAsync(finalPrompt);
+        var finalPrompt = req.Context is null
+            ? req.Prompt
+            : $"UserId: {userId}\nContext (quiz): {req.Context}\n\nUser question: {req.Prompt}";
 
-//        return Ok(new AiChatResponseDto
-//        {
-//            Answer = answer
-//        });
-//    }
+		var answer = await _ai.AskAsync(finalPrompt, cancellationToken);
 
-//    [HttpPost("coach")]
-//    public async Task<ActionResult<AiCoachResponseDto>> Coach([FromBody] AiCoachRequestDto req)
-//    {
-//        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        return Ok(new AiChatResponseDto
+        {
+            Answer = answer
+        });
+    }
 
-//        var prompt =
-//            $"Du är en personlig cybersäkerhetscoach.\n" +
-//            $"UserId: {userId}\n" +
-//            $"Quiz summary: {req.Summary}\n\n" +
-//            "Analysera styrkor och svagheter och ge konkreta rekommendationer på svenska.";
+    [HttpPost("coach")]
+	public async Task<ActionResult<AiCoachResponseDto>> Coach([FromBody] AiCoachRequestDto req, CancellationToken cancellationToken)
+    {
+		if (req is null)
+		{
+			return BadRequest("Request body is required.");
+		}
 
-//        var feedback = await _ai.AskAsync(prompt);
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (string.IsNullOrWhiteSpace(userId))
+		{
+			return Unauthorized("User identity not found.");
+		}
 
-//        return Ok(new AiCoachResponseDto
-//        {
-//            Feedback = feedback
-//        });
-//    }
-//}
+        var prompt =
+            $"Du är en personlig cybersäkerhetscoach.\n" +
+            $"UserId: {userId}\n" +
+            $"Quiz summary: {req.Summary}\n\n" +
+            "Analysera styrkor och svagheter och ge konkreta rekommendationer på svenska.";
+
+		var feedback = await _ai.AskAsync(prompt, cancellationToken);
+
+        return Ok(new AiCoachResponseDto
+        {
+            Feedback = feedback
+        });
+    }
+}
 
 
 

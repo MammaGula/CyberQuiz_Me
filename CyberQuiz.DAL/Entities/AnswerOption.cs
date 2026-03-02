@@ -5,7 +5,7 @@ namespace CyberQuiz.DAL.Entities;
 // One AnwerOption: many Ressults
 public class AnswerOption
 {
-    public int Id { get; init; } // PK- init for immutability after creation (can not change)
+    public int Id { get; set; }
 
     [Required]
     [MaxLength(500)]
@@ -14,7 +14,7 @@ public class AnswerOption
 
     // The order to display ex: 1st option, 2nd option, etc. (for UI purposes)
     public int DisplayOrder { get; set; }
-    public int QuestionId { get; init; } // FK to the related question 
+    public int QuestionId { get; set; } // FK to the related question 
 
 
 

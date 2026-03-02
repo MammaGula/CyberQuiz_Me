@@ -4,6 +4,7 @@ using CyberQuiz.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CyberQuiz.DAL.Migrations
 {
     [DbContext(typeof(CyberQuizDbContext))]
-    partial class CyberQuizDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260228001735_ImproveDatabaseEfficiency")]
+    partial class ImproveDatabaseEfficiency
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,6 +246,8 @@ namespace CyberQuiz.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AnswerOptionId");
+
+                    b.HasIndex("UserId", "AnsweredAt");
 
                     b.HasIndex(new[] { "AnsweredAt" }, "IX_UserResult_AnsweredAt");
 

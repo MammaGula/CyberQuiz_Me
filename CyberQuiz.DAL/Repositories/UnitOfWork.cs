@@ -34,13 +34,19 @@ public class UnitOfWork : IUnitOfWork
         IAnswerOptionRepository answerOptions,
         IUserResultRepository userResults)
     {
-        _db = db;
+		ArgumentNullException.ThrowIfNull(db);
+		ArgumentNullException.ThrowIfNull(categories);
+		ArgumentNullException.ThrowIfNull(subCategories);
+		ArgumentNullException.ThrowIfNull(questions);
+		ArgumentNullException.ThrowIfNull(answerOptions);
+		ArgumentNullException.ThrowIfNull(userResults);
 
-        Categories = categories;
-        SubCategories = subCategories;
-        Questions = questions;
-        AnswerOptions = answerOptions;
-        UserResults = userResults;
+		_db = db;
+		Categories = categories;
+		SubCategories = subCategories;
+		Questions = questions;
+		AnswerOptions = answerOptions;
+		UserResults = userResults;
     }
 
 
@@ -48,10 +54,9 @@ public class UnitOfWork : IUnitOfWork
     /// Commits all changes made through repositories in a single database transaction.
     /// Task<int>: Returns the number of affected rows.
     /// </summary>
-    public async Task<int> SaveAsync()
+    public async Task<int> SaveAsync() 
         => await _db.SaveChangesAsync();
 }
-
 
 
 // UnitOfWork!!!!:

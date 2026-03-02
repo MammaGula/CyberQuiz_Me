@@ -14,8 +14,12 @@ namespace CyberQuiz.DAL.Entities;
 [Index(nameof(QuestionId), Name = "IX_UserResult_QuestionId")]
 [Index(nameof(AnsweredAt), Name = "IX_UserResult_AnsweredAt")]
 
+
 // Composite index: queries like WHERE UserId = ? ORDER BY AnsweredAt DESC
 [Index(nameof(UserId), nameof(AnsweredAt), Name = "IX_UserResult_UserId_AnsweredAt")]
+
+// Composite index: queries like WHERE UserId = ? AND QuestionId = ? ORDER BY Id DESC (latest answer per question)
+[Index(nameof(UserId), nameof(QuestionId), nameof(Id), Name = "IX_UserResult_UserId_QuestionId_Id")]
 public class UserResult
 {
     public int Id { get; set; }  // PK

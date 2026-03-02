@@ -1,7 +1,10 @@
+using CyberQuiz.BLL.Interfaces;
+using CyberQuiz.BLL.Services;
 using CyberQuiz.DAL.Data;
 using CyberQuiz.DAL.Entities;
 using CyberQuiz.DAL.Repositories;
 using CyberQuiz.DAL.Repositories.Interfaces;
+using CyberQuiz.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,11 +42,42 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<CyberQuizDbContext>()
     .AddDefaultTokenProviders();
 
+// Configure cookie behavior for API (make cookies usable from Blazor UI and return 401/403 for API calls)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "CyberQuiz.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None; // allow cross-site cookie for UI on different origin
+
+    // Prevent automatic redirects for API calls — return proper status codes instead
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
 // -----------------------------
-// 3. Add Authentication system
-// (JWT kommer soooooon)
+// 3. Add Authentication & Authorization system
 // -----------------------------
-builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 // -----------------------------
 // 4. Add Controllers
@@ -75,6 +109,24 @@ builder.Services.AddCors(options =>
 });
 
 
+// -----------------------------
+// 6.1 Register HttpClients
+// -----------------------------
+builder.Services.AddHttpClient<AiService>(client =>
+{
+    var baseUrl = builder.Configuration["Ai:BaseUrl"];
+    if (!string.IsNullOrWhiteSpace(baseUrl))
+    {
+        client.BaseAddress = new Uri(baseUrl);
+    }
+
+    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
+    {
+        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+    }
+});
+
+
 
 // -----------------------------
 // 7. Register Repositories + UnitOfWork
@@ -85,6 +137,11 @@ builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerOptionRepository, AnswerOptionRepository>();
 builder.Services.AddScoped<IUserResultRepository, UserResultRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// -----------------------------
+// 7.1 Register BLL services
+// -----------------------------
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 var app = builder.Build();
 

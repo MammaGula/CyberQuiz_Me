@@ -12,15 +12,17 @@
 
 <div class="row g-4">
 
-    @foreach (var category in categoriesFromApi) 
+    @foreach (var category in categoriesFromApi)
     {
         <div class="col-12 col-md-6 col-lg-4">
-            <div class="card p-3 shadow-sm"> @*kategorierna blir ett "card"*@
+            <div class="card p-3 shadow-sm">
+                @*kategorierna blir ett "card"*@
 
                 <h5>@category.Name</h5>
 
                 <button class="btn btn-primary mt-2"
-                        @onclick="() => ToggleCategory(category.Id)"> @*Expand vid klick*@
+                        @onclick="() => ToggleCategory(category.Id)">
+                    @*Expand vid klick*@
                     Open
                 </button>
 
@@ -39,7 +41,7 @@
 
                                 <span>
                                     @(sub.IsLocked ? "🔒" :
-                                      sub.IsCompleted ? "✅" : "⭕")
+                                                            sub.IsCompleted ? "✅" : "⭕")
                                 </span>
 
                                 @if (!sub.IsLocked) @*om upplåst startar*@
