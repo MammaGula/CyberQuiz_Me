@@ -21,7 +21,7 @@ public static class DbSeeder
 		// (Avoid doing db.Database.MigrateAsync() here to keep seeding and schema management separate.)
 
 		// 1. Seed Identity Roles (User, Admin)
-        await SeedRolesAsync(roleManager);
+        //await SeedRolesAsync(roleManager);
 
         // 3. Seed Default Users (user, admin) using transaction logic if needed
         //await SeedUsersAsync(userManager);
@@ -30,19 +30,19 @@ public static class DbSeeder
         await SeedQuizDataAsync(db);
     }
 
-    private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
-    {
-        string[] roles = { "User", "Admin" };
+    //private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+    //{
+    //    string[] roles = { "User", "Admin" };
 
-        foreach (var role in roles)
-        {
-            if (!await roleManager.RoleExistsAsync(role))
-            {
-                var result = await roleManager.CreateAsync(new IdentityRole(role));
-                EnsureSucceeded(result, $"Failed to create role '{role}'.");
-            }
-        }
-    }
+    //    foreach (var role in roles)
+    //    {
+    //        if (!await roleManager.RoleExistsAsync(role))
+    //        {
+    //            var result = await roleManager.CreateAsync(new IdentityRole(role));
+    //            EnsureSucceeded(result, $"Failed to create role '{role}'.");
+    //        }
+    //    }
+    //}
 
 
 
