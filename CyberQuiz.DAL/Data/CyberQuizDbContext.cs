@@ -56,11 +56,11 @@ public class CyberQuizDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         // AppUser → UserResult
-        builder.Entity<AppUser>()
-            .HasMany(u => u.Results)
-            .WithOne(r => r.User)
-            .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade); // cascade: if user is deleted (user choice)
+        //builder.Entity<AppUser>()
+        //    .HasMany(u => u.Results)
+        //    .WithOne(r => r.User)
+        //    .HasForeignKey(r => r.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade); // cascade: if user is deleted (user choice)
 
         // Question → UserResult
         builder.Entity<Question>()
