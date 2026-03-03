@@ -1,10 +1,9 @@
 ﻿using CyberQuiz.DAL.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CyberQuiz.DAL.Data;
 
-public class CyberQuizDbContext : IdentityDbContext<AppUser>
+public class CyberQuizDbContext : DbContext
 {
 
     // Inherite from IdentityDbContext to include ASP.NET Core Identity tables for user management
@@ -57,11 +56,11 @@ public class CyberQuizDbContext : IdentityDbContext<AppUser>
             .OnDelete(DeleteBehavior.Cascade);
 
         // AppUser → UserResult
-        builder.Entity<AppUser>()
-            .HasMany(u => u.Results)
-            .WithOne(r => r.User)
-            .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade); // cascade: if user is deleted (user choice)
+        //builder.Entity<AppUser>()
+        //    .HasMany(u => u.Results)
+        //    .WithOne(r => r.User)
+        //    .HasForeignKey(r => r.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade); // cascade: if user is deleted (user choice)
 
         // Question → UserResult
         builder.Entity<Question>()

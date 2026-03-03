@@ -7,8 +7,6 @@ using CyberQuiz.DAL.Repositories.Interfaces;
 using CyberQuiz.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using CyberQuiz.BLL.Interfaces;
-using CyberQuiz.BLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

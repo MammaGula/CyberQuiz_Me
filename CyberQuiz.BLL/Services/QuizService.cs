@@ -60,53 +60,53 @@ namespace CyberQuiz.BLL.Services
             return result;
         }
 
-        public async Task<List<SubCategoryDto>> GetSubCategoriesAsync (int categoryId, string userId)
+        public async Task<List<SubCategoryDto>> GetSubCategoriesAsync(int categoryId, string userId)
         {
-            //Måste ha användare (id)
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("userId is required.");
 
-            //Hämtar subkategorier + frågor
             var subCategories = await _uow.SubCategories.GetAllAsync();
             var questions = await _uow.Questions.GetAllAsync();
 
+            // 🔥 DEBUG START
+            Console.WriteLine("===== DEBUG SUBCATEGORIES =====");
+            Console.WriteLine($"Incoming categoryId: {categoryId}");
+            Console.WriteLine($"Total subcategories in DB: {subCategories.Count}");
+
+            foreach (var sc in subCategories)
+            {
+                Console.WriteLine($"SubId: {sc.Id}, CategoryId: {sc.CategoryId}, Name: {sc.Name}");
+            }
+            // 🔥 DEBUG END
+
             var subsInCategory = subCategories
-                .Where(sc => sc.CategoryId == categoryId) //filtrerar subkategorier i denna kategori
-                .OrderBy(sc => sc.Id) //sorterar på Id 
+                .Where(sc => sc.CategoryId == categoryId)
+                .OrderBy(sc => sc.Id)
                 .ToList();
 
-            //SubCategory1 -> SubProgress -> ScorePercent=80, IsCompleted=true
-            var progressBySubId = new Dictionary<int, SubProgress>(); 
+            Console.WriteLine($"Filtered subs: {subsInCategory.Count}");
+
+            var progressBySubId = new Dictionary<int, SubProgress>();
             var dtos = new List<SubCategoryDto>();
-
-
 
             foreach (var sub in subsInCategory)
             {
-                //Antal frågor i subkategorin
                 var questionCount = questions.Count(q => q.SubCategoryId == sub.Id);
-
-                
-                //Beräknar användarens progress för subkategorin
                 var progress = await GetSubCategoryProgressAsync(userId, sub.Id);
 
-                
                 progress.QuestionCount = questionCount;
                 progressBySubId[sub.Id] = progress;
 
-
-                //Lägger till DTO med IsLocked=true som default (kommer justeras i ApplyLockStates)
                 dtos.Add(new SubCategoryDto
                 {
                     Id = sub.Id,
                     Name = sub.Name,
                     QuestionCount = questionCount,
-                    IsLocked = true, //sätts korrekt i ApplyLockStates
+                    IsLocked = true,
                     IsCompleted = progress.IsCompleted
                 });
             }
 
-            //Sätter IsLocked baserat på föregående subkategori (intern metod längre ner)
             ApplyLockStates(dtos, progressBySubId);
 
             return dtos;
@@ -145,14 +145,19 @@ namespace CyberQuiz.BLL.Services
 
             //Returnerar frågor som DTOs
             return questions
-                .Where(q => q.SubCategoryId == subCategoryId)
-                .Select(q => new QuestionDto
+            .Where(q => q.SubCategoryId == subCategoryId)
+            .Select(q => new QuestionDto
+            {
+             Id = q.Id,
+                Text = q.Text,
+                AnswerOptions = q.AnswerOptions.Select(a => new AnswerOptionDto
                 {
-                    Id = q.Id,
-                    Text = q.Text
-                })
+                    Id = a.Id,
+                    Text = a.Text
+                }).ToList()
+            })
                 .ToList();
-        }
+            }
 
 
         public async Task<SubmitAnswerResponseDto> SubmitAnswerAsync(string userId, SubmitAnswerRequestDto request)

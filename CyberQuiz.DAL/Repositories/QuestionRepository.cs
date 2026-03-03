@@ -19,11 +19,12 @@ public class QuestionRepository : IQuestionRepository
 
     // Returns all questions from the database
     public async Task<List<Question>> GetAllAsync()
-        => await _db.Questions
-            .AsNoTracking()
-            .OrderBy(q => q.SubCategoryId)
-            .ThenBy(q => q.Id)
-            .ToListAsync();
+    => await _db.Questions
+        .Include(q => q.AnswerOptions)
+        .AsNoTracking()
+        .OrderBy(q => q.SubCategoryId)
+        .ThenBy(q => q.Id)
+        .ToListAsync();
 
     // Returns 1 question with given id, or null if not found
     public async Task<Question?> GetByIdAsync(int id)

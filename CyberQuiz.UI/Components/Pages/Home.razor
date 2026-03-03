@@ -1,12 +1,81 @@
-﻿@page "/"
+﻿@page "/" 
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
 
-<PageTitle>Home</PageTitle>
+<PageTitle>CyberQuiz</PageTitle>
 
-<h1>🤖CyberQuiz🤖</h1>
+<!-- Wrapper som täcker nästan hela viewporten och centrerar innehållet -->
+<div class="home-wrapper">
 
-Welcome to CyberQuiz.
+    <!-- AuthorizeView visar olika UI beroende på om användaren är inloggad -->
+    <AuthorizeView>
 
-<div>
-    <a class="btn btn-primary" href="/Account/Login">Log in</a>
-    <a class="btn btn-secondary" href="/Account/Register">Register</a>
+        <!-- Detta block visas ENDAST om användaren är inloggad -->
+        <Authorized Context="auth">
+
+            <div class="hero-card">
+
+                <!-- Hämtar inloggad användares namn via auth-context -->
+                <h1 class="hero-title">
+                    Welcome back, @auth.User.Identity?.Name 👋
+                </h1>
+
+                <p class="hero-sub">
+                    Ready to continue your cybersecurity journey?
+                </p>
+
+                <!-- Navigerar till categories när användaren klickar -->
+                <button class="btn btn-primary btn-lg mt-3"
+                        @onclick="GoToCategories">
+                    Start Quiz
+                </button>
+
+            </div>
+
+        </Authorized>
+
+        <!-- Detta block visas om användaren INTE är inloggad -->
+        <NotAuthorized>
+
+            <div class="hero-card">
+
+                <h1 class="hero-title">CyberQuiz 🚀</h1>
+
+                <p class="hero-sub">
+                    Test your cybersecurity knowledge and unlock new levels.
+                </p>
+
+                <div class="mt-4">
+
+                    <!-- Navigerar till Identity Login-sidan -->
+                    <button class="btn btn-primary btn-lg me-3"
+                            @onclick='() => Navigation.NavigateTo("/Account/Login")'>
+                        Login
+                    </button>
+
+                    <!-- Navigerar till Identity Register-sidan -->
+                    <button class="btn btn-outline-light btn-lg"
+                            @onclick='() => Navigation.NavigateTo("/Account/Register")'>
+                        Register
+                    </button>
+
+                </div>
+
+            </div>
+
+        </NotAuthorized>
+
+    </AuthorizeView>
+
 </div>
+
+@code {
+
+    // Metod som används av Start Quiz-knappen
+    // NavigationManager används för att navigera till en annan route
+    private void GoToCategories()
+    {
+        Navigation.NavigateTo("/categories");
+    }
+}

@@ -25,7 +25,7 @@ public class UserResult
     public int Id { get; set; }  // PK
 
     [Required]
-    public string UserId { get; set; } = null!; // FK to the related User (Who answered the question)
+    public string UserId { get; set; } = string.Empty; // FK to the related User (Who answered the question)
 
     public int QuestionId { get; set; } // FK to the related Question (Which question user answered)
 
@@ -43,9 +43,6 @@ public class UserResult
 
     // Navigation property for the related answerOption(one answerOption can be in many userResults)
     public AnswerOption AnswerOption { get; set; } = null!;
-
-    // Navigation property for the related user (1 User-many UserResult)
-    public AppUser User { get; set; } = null!;
 }
 
 

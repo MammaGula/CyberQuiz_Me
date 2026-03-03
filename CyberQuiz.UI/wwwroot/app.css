@@ -73,3 +73,44 @@ h1:focus {
 
         box-shadow: 0 12px 25px rgba(0,0,0,0.2);
     }
+
+/* =========================
+   HOME HERO STYLING
+   ========================= */
+
+.home-wrapper {
+    /* Gör att sektionen täcker nästan hela viewportens höjd */
+    min-height: 90vh;
+    /* Flex används för att centrera innehållet */
+    display: flex;
+    justify-content: center; /* horisontellt */
+    align-items: center; /* vertikalt */
+    /* Mörk gradient-bakgrund för modern look */
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.hero-card {
+    /* Lätt genomskinlig bakgrund för glass-effekt */
+    background: rgba(255, 255, 255, 0.08);
+    /* Blur-effekt bakom kortet (glas-look) */
+    backdrop-filter: blur(15px);
+    padding: 60px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    max-width: 600px;
+    width: 90%;
+    /* Djupskugga för modern känsla */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.hero-sub {
+    margin-top: 15px;
+    opacity: 0.85; /* Lite mjukare text */
+    font-size: 1.1rem;
+}

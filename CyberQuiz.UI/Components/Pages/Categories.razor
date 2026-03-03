@@ -1,7 +1,9 @@
 ﻿@page "/categories"
+@attribute [Authorize]
 @using CyberQuiz.Shared.DTOs
 @using System.Security.Claims
 @using CyberQuiz.UI.Services
+@using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IQuizApiClient QuizApi

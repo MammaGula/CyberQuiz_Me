@@ -148,16 +148,17 @@ namespace CyberQuiz.API.Controllers
         // POST /api/quiz/submit-answer (Temporary)
         // POST: api/quiz/submit-answer?userId=xxx
         [HttpPost("submit-answer")]
-        public async Task<IActionResult> SubmitAnswer(
-            [FromQuery] string userId,
-            [FromBody] SubmitAnswerRequestDto request)
+        public async Task<IActionResult> SubmitAnswer(string userId, SubmitAnswerRequestDto request)
         {
-            if (string.IsNullOrEmpty(userId))
-                return BadRequest("userId is required");
-
-            var result = await _quizService.SubmitAnswerAsync(userId, request);
-
-            return Ok(result);
+            try
+            {
+                var result = await _quizService.SubmitAnswerAsync(userId, request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message }); // 🔥 JSON istället
+            }
         }
     }
 }
