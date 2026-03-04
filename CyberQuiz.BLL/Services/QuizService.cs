@@ -268,7 +268,12 @@ namespace CyberQuiz.BLL.Services
                 CompletedSubCategories = completedSubCategories,
                 TotalSubCategories = totalSubCategories,
                 TotalCategories = totalCategories,
-                CompletedCategories = completedCategories
+                CompletedCategories = completedCategories,
+
+                //procent
+                OverallPercent = totalSubCategories == 0
+                ? 0 
+                : Math.Round((Double)completedSubCategories / totalSubCategories * 100, 2)
             };
         }
 
