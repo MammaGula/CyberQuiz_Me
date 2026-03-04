@@ -10,5 +10,7 @@ namespace CyberQuiz.Shared.DTOs
         public int TotalSubCategories { get; set; }
         public int CompletedSubCategories { get; set; }
         public double OverallPercent { get; set; }
+        public int TotalCategories { get; set; }
+        public int CompletedCategories { get; set; }
     }
 }

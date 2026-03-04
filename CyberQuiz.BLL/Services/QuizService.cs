@@ -226,9 +226,50 @@ namespace CyberQuiz.BLL.Services
         }
 
 
+        //Beräknar användarens progress för att kunna displaya i overview (för alla kategorier och subkategorier)
         public async Task<UserProgressDto> GetUserProgressAsync(string userId)
         {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("userId is required.");
 
+            var categories = await _uow.Categories.GetAllAsync();
+            var subCategories = await _uow.SubCategories.GetAllAsync();
+
+            var totalCategories = categories.Count;
+            var totalSubCategories = subCategories.Count;
+
+            var completedSubCategories = 0;
+            foreach (var sub in subCategories)//Räknar färdiga subkategorier
+            {
+                var p = await GetSubCategoryProgressAsync(userId, sub.Id);
+                if (p.IsCompleted) completedSubCategories++;
+            }
+
+            //Räknar färdiga kategorier (en kategori är klar om alla dess subkategorier är klara)
+            var completedCategories = 0;
+            foreach (var cat in categories)
+            {
+                var subsInCat = subCategories.Where(sc => sc.CategoryId == cat.Id).ToList();
+                if (subsInCat.Count == 0) continue;
+
+                var allDone = true;
+                foreach (var sub in subsInCat)
+                {
+                    var p = await GetSubCategoryProgressAsync(userId, sub.Id);
+                    if (!p.IsCompleted) { allDone = false; break; }
+                }
+
+                if (allDone) completedCategories++;
+            }
+
+            //Returnerar DTO med progress-info (Categories, Subcategories)
+            return new UserProgressDto
+            {
+                CompletedSubCategories = completedSubCategories,
+                TotalSubCategories = totalSubCategories,
+                TotalCategories = totalCategories,
+                CompletedCategories = completedCategories
+            };
         }
 
         //-------------------------------------------------------------------------------------------
