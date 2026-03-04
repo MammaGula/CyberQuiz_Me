@@ -160,6 +160,14 @@ namespace CyberQuiz.API.Controllers
                 return BadRequest(new { message = ex.Message }); // 🔥 JSON istället
             }
         }
+
+        //hämta (GET) userprogress : 
+        [HttpGet("user-progress")]
+        public async Task<ActionResult<UserProgressDto>> GetUserProgress(string userId)
+        {
+            var progress = await _quizService.GetUserProgressAsync(userId);
+            return Ok(progress);
+        }
     }
 }
 
