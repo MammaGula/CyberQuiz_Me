@@ -6,14 +6,14 @@ namespace CyberQuiz.DAL.Repositories.Interfaces;
 public interface IAnswerOptionRepository
 {
     // Returns all answer options in the database(For Admin ) >> ALL
-    Task<List<AnswerOption>> GetAllAsync();
+    Task<List<AnswerOption>> GetAllAsync(CancellationToken cancellationToken = default);
 
 
     // Returns all answer options for a specific question >> All for 1 question
     Task<List<AnswerOption>> GetByQuestionIdAsync(int questionId, CancellationToken cancellationToken = default);
     
     // Returns a specific answer option by its ID 
-    Task<AnswerOption?> GetByIdAsync(int id);
+    Task<AnswerOption?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task AddAsync(AnswerOption option);
     void Remove(AnswerOption option);
 }

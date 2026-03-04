@@ -17,11 +17,11 @@ public class CategoryRepository : ICategoryRepository
     }
 
     // Returns all categories from the database
-    public async Task<List<Category>> GetAllAsync()
+    public async Task<List<Category>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _db.Categories
             .AsNoTracking()
             .OrderBy(c => c.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
     // Returns all categories including their related subcategories
     public async Task<List<Category>> GetAllWithSubCategoriesAsync(CancellationToken cancellationToken = default)
@@ -33,8 +33,8 @@ public class CategoryRepository : ICategoryRepository
             .ToListAsync(cancellationToken);
 
     // Returns a category by its ID
-    public async Task<Category?> GetByIdAsync(int id)
-        => await _db.Categories.FindAsync(id);
+    public async Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        => await _db.Categories.FindAsync([id], cancellationToken);
 
     public async Task AddAsync(Category category)
 	{

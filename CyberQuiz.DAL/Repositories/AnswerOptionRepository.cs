@@ -19,13 +19,13 @@ public class AnswerOptionRepository : IAnswerOptionRepository
 
 
     // Returns all answer options in the database(For Admin ) >> ALL
-    public async Task<List<AnswerOption>> GetAllAsync()
+    public async Task<List<AnswerOption>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _db.AnswerOptions
             .AsNoTracking()
             .OrderBy(a => a.QuestionId)
             .ThenBy(a => a.DisplayOrder)
             .ThenBy(a => a.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
 
     // Returns all answer options for a specific question >> All for 1 question
@@ -37,8 +37,8 @@ public class AnswerOptionRepository : IAnswerOptionRepository
             .ToListAsync(cancellationToken);
 
     // Returns a specific answer option by its ID 
-    public async Task<AnswerOption?> GetByIdAsync(int id)
-        => await _db.AnswerOptions.FindAsync(id); // for PK only!!!
+    public async Task<AnswerOption?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        => await _db.AnswerOptions.FindAsync([id], cancellationToken); // for PK only!!!
 
     public async Task AddAsync(AnswerOption option)
 	{

@@ -18,17 +18,17 @@ public class QuestionRepository : IQuestionRepository
 
 
     // Returns all questions from the database
-    public async Task<List<Question>> GetAllAsync()
+    public async Task<List<Question>> GetAllAsync(CancellationToken cancellationToken = default)
     => await _db.Questions
         .Include(q => q.AnswerOptions)
         .AsNoTracking()
         .OrderBy(q => q.SubCategoryId)
         .ThenBy(q => q.Id)
-        .ToListAsync();
+        .ToListAsync(cancellationToken);
 
     // Returns 1 question with given id, or null if not found
-    public async Task<Question?> GetByIdAsync(int id)
-        => await _db.Questions.FindAsync(id);
+    public async Task<Question?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        => await _db.Questions.FindAsync([id], cancellationToken);
 
     // Returns all questions that belong to given subCategoryId
     public async Task<List<Question>> GetBySubCategoryAsync(int subCategoryId, CancellationToken cancellationToken = default)

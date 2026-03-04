@@ -14,8 +14,8 @@ public static class DbSeeder
         RoleManager<IdentityRole> roleManager)
     {
         ArgumentNullException.ThrowIfNull(db);
-        ArgumentNullException.ThrowIfNull(userManager);
-        ArgumentNullException.ThrowIfNull(roleManager);
+        //ArgumentNullException.ThrowIfNull(userManager);
+        //ArgumentNullException.ThrowIfNull(roleManager);
 
 		// Ensure the host applies migrations before calling the seeder.
 		// (Avoid doing db.Database.MigrateAsync() here to keep seeding and schema management separate.)

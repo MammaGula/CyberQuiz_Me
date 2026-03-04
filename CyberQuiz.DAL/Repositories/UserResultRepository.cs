@@ -19,16 +19,16 @@ public class UserResultRepository : IUserResultRepository
 
 
     // Returns all UserResults from the database (AsNoTracking = ReadOnly)
-    public async Task<List<UserResult>> GetAllAsync()
+    public async Task<List<UserResult>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _db.UserResults
             .AsNoTracking()
             .OrderBy(r => r.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
 
     // Returns a UserResult by its Id, or null if not found
-    public async Task<UserResult?> GetByIdAsync(int id)
-        => await _db.UserResults.FindAsync(id);
+    public async Task<UserResult?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        => await _db.UserResults.FindAsync([id], cancellationToken);
 
 
     // Returns the latest UserResult per QuestionId for a specific user
