@@ -39,5 +39,12 @@ namespace CyberQuiz.UI.Services
             return await response.Content.ReadFromJsonAsync<SubmitAnswerResponseDto>()
                    ?? throw new Exception("Failed to deserialize SubmitAnswerResponseDto");
         }
+
+        //user progress
+        public async Task<UserProgressDto> GetUserProgressAsync(string userId)
+        {
+            return await _httpClient.GetFromJsonAsync<UserProgressDto>(
+                $"api/quiz/user-progress?userId={userId}");
+        }
     }
 }
