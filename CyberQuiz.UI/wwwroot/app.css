@@ -114,3 +114,16 @@ h1:focus {
     opacity: 0.85; /* Lite mjukare text */
     font-size: 1.1rem;
 }
+
+/* Progress i navbar */
+
+.progress-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.progress-label {
+    font-size: 0.8rem;
+    color: #555;
+}

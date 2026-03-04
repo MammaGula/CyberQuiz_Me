@@ -1,4 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using CyberQuiz.Shared.DTOs
+@using System.Security.Claims
+@using CyberQuiz.UI.Services
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IQuizApiClient QuizApi
 @inherits LayoutComponentBase
 
 <div class="page">
@@ -7,14 +12,35 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-flex justify-content-end align-items-center">
+        <div class="top-row px-4 d-flex align-items-center">
 
+            <!--Visar olika beroende på vem som är inloggad eller om user ens är inloggad-->
             <AuthorizeView>
+                <!--Om inloggad körs detta-->
                 <Authorized Context="auth">
 
-                    <span class="me-3">
+                    <div class="me-auto">
                         👤 @auth.User.Identity?.Name
-                    </span>
+                    </div>
+                
+                    @if (progress != null)
+                    {
+                        <div class="progress-wrapper text-center">
+
+                            <div class="progress" style="height: 20px; width:250px;">
+                                <div class="progress-bar bg-success"
+                                    role="progressbar"
+                                     style="width:@($"{progress.OverallPercent}%")">
+                                </div>
+                            </div>
+                            <!--Visar hur många subcategories som är klarade av totalt antal subcategories-->
+                            <small class="progress-label">
+                                Progress (@progress.CompletedSubCategories / @progress.TotalSubCategories)
+                            </small>
+
+                        </div>
+                        
+                    }
                 </Authorized>
 
                 <NotAuthorized>
@@ -43,3 +69,26 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+
+    //Variabel som lagrar progressdata från API
+    private UserProgressDto? progress;
+
+    //när layout laddas
+    protected override async Task OnInitializedAsync()
+    {
+        //använder blazor identity för authentisering
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        //user Id för unik progress overview
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId != null)
+        {
+            progress = await QuizApi.GetUserProgressAsync(userId);
+        }
+    }
+
+}
