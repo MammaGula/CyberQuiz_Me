@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CyberQuiz.Shared.DTOs
 {
-    //För att visa generell överblick av progress på "profile"
+    //För att visa generell överblick av progress 
     public class UserProgressDto
     {
         public int TotalSubCategories { get; set; }

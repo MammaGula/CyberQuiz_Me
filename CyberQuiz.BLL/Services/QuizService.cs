@@ -226,7 +226,10 @@ namespace CyberQuiz.BLL.Services
         }
 
 
+        public async Task<UserProgressDto> GetUserProgressAsync(string userId)
+        {
 
+        }
 
         //-------------------------------------------------------------------------------------------
         //--------------------------Interna hjälpmetoder---------------------------------------------
