@@ -18,13 +18,13 @@ public class SubCategoryRepository : ISubCategoryRepository
     }
 
     // Returns all subcategories from the database(For small cases, big case is quite slow)
-    public async Task<List<SubCategory>> GetAllAsync()
+    public async Task<List<SubCategory>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _db.SubCategories
             .AsNoTracking()
             .OrderBy(sc => sc.CategoryId)
             .ThenBy(sc => sc.SortOrder)
             .ThenBy(sc => sc.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
 
     // Returns subcategories that belong to a specific category(Suitable for SubCategory List-Page)
@@ -37,8 +37,8 @@ public class SubCategoryRepository : ISubCategoryRepository
 
 
     // Returns all categories including their related subcategories
-    public async Task<SubCategory?> GetByIdAsync(int id)
-        => await _db.SubCategories.FindAsync(id);
+    public async Task<SubCategory?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        => await _db.SubCategories.FindAsync([id], cancellationToken);
 
     public async Task AddAsync(SubCategory subCategory)
 	{

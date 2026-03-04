@@ -56,6 +56,9 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     public async Task<int> SaveAsync() 
         => await _db.SaveChangesAsync();
+
+	public async Task<int> SaveAsync(CancellationToken cancellationToken)
+		=> await _db.SaveChangesAsync(cancellationToken);
 }
 
 

@@ -9,9 +9,9 @@ namespace CyberQuiz.DAL.Data;
 public static class DbSeeder
 {
     public static async Task SeedAsync(
-        CyberQuizDbContext db)
-        //UserManager<AppUser> userManager,
-        //RoleManager<IdentityRole> roleManager)
+        CyberQuizDbContext db,
+        UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         ArgumentNullException.ThrowIfNull(db);
         //ArgumentNullException.ThrowIfNull(userManager);

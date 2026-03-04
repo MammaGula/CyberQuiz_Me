@@ -12,4 +12,5 @@ public interface IUnitOfWork
     IUserResultRepository UserResults { get; }
 
     Task<int> SaveAsync();
+    Task<int> SaveAsync(CancellationToken cancellationToken);
 }

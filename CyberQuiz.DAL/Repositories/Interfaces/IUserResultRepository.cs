@@ -7,8 +7,8 @@ namespace CyberQuiz.DAL.Repositories.Interfaces;
 
 public interface IUserResultRepository
 {
-    Task<List<UserResult>> GetAllAsync();
-    Task<UserResult?> GetByIdAsync(int id);
+    Task<List<UserResult>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<UserResult?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
     // Returns latest UserResult per QuestionId for a given user and set of questionIds
     Task<List<UserResult>> GetLatestResultsForUserAndQuestionIdsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default);

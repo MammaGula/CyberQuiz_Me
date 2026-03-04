@@ -6,10 +6,10 @@ public interface IQuestionRepository
 {
 
     // Returns all questions from the database
-    Task<List<Question>> GetAllAsync();
+    Task<List<Question>> GetAllAsync(CancellationToken cancellationToken = default);
 
     // Returns 1 question with given id, or null if not found
-    Task<Question?> GetByIdAsync(int id);
+    Task<Question?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
     // Returns all questions that belong to given subCategoryId
     Task<List<Question>> GetBySubCategoryAsync(int subCategoryId, CancellationToken cancellationToken = default);
