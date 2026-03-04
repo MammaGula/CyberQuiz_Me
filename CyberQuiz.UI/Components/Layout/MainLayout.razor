@@ -12,23 +12,34 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-flex justify-content-end align-items-center">
+        <div class="top-row px-4 d-flex align-items-center">
 
             <!--Visar olika beroende på vem som är inloggad eller om user ens är inloggad-->
             <AuthorizeView>
                 <!--Om inloggad körs detta-->
                 <Authorized Context="auth">
 
-                    <span class="me-3">
+                    <div class="me-auto">
                         👤 @auth.User.Identity?.Name
-                    </span>
+                    </div>
                 
                     @if (progress != null)
                     {
-                        <!--Visar hur många subcategories som är klarade av totalt antal subcategories-->
-                        <span class="badge bg-success me-3">
-                            @progress.CompletedSubCategories / @progress.TotalSubCategories
-                        </span>
+                        <div class="progress-wrapper text-center">
+
+                            <div class="progress" style="height: 20px; width:250px;">
+                                <div class="progress-bar bg-success"
+                                    role="progressbar"
+                                    style="width:@progress.OverallPercent">
+                                </div>
+                            </div>
+                            <!--Visar hur många subcategories som är klarade av totalt antal subcategories-->
+                            <small class="progress-label">
+                                Progress (@progress.CompletedSubCategories / @progress.TotalSubCategories)
+                            </small>
+
+                        </div>
+                        
                     }
                 </Authorized>
 
