@@ -9,13 +9,13 @@ namespace CyberQuiz.DAL.Data;
 public static class DbSeeder
 {
     public static async Task SeedAsync(
-        CyberQuizDbContext db,
-        UserManager<AppUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        CyberQuizDbContext db)
+        //UserManager<AppUser> userManager,
+        //RoleManager<IdentityRole> roleManager)
     {
         ArgumentNullException.ThrowIfNull(db);
-        ArgumentNullException.ThrowIfNull(userManager);
-        ArgumentNullException.ThrowIfNull(roleManager);
+        //ArgumentNullException.ThrowIfNull(userManager);
+        //ArgumentNullException.ThrowIfNull(roleManager);
 
 		// Ensure the host applies migrations before calling the seeder.
 		// (Avoid doing db.Database.MigrateAsync() here to keep seeding and schema management separate.)
