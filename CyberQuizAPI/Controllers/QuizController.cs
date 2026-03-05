@@ -60,7 +60,7 @@ namespace CyberQuiz.API.Controllers
 
 
 
-        // GET /api/quiz/subcategories?categoryId=1 (Temporary)
+        //3. Return Questions of this subcategory
         // GET: api/quiz/questions?subCategoryId=1&userId=xxx
         [HttpGet("questions")]
         public async Task<IActionResult> GetQuestions(
@@ -76,76 +76,7 @@ namespace CyberQuiz.API.Controllers
         }
 
 
-        // 3. Return Questions of this subcategory
-
-        // GET: /api/quiz/subcategories/{subCategoryId}/questions
-        //[HttpGet("subcategories/{subCategoryId:int}/questions")]
-        //public async Task<ActionResult<List<QuestionDto>>> GetQuestionsBySubCategoryId([FromRoute] int subCategoryId)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    if (string.IsNullOrWhiteSpace(userId))
-        //        return Unauthorized("User identity not found.");
-
-        //    try
-        //    {
-        //        var result = await _quizService.GetQuestionsAsync(subCategoryId, userId);
-        //        return Ok(result);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-
-        // GET /api/quiz/questions?subCategoryId=1 (Temporary)
-        //[HttpGet("questions")]
-        //public async Task<ActionResult<List<QuestionDto>>> GetQuestions([FromQuery] int subCategoryId)
-        //{
-        //    if (!_environment.IsDevelopment())
-        //        return NotFound();
-        //    var userId = _userManager.GetUserId(User);
-        //    if (string.IsNullOrWhiteSpace(userId))
-        //        return Unauthorized("User identity not found.");
-
-        //    try
-        //    {
-        //        var result = await _quizService.GetQuestionsAsync(subCategoryId, userId);
-        //        return Ok(result);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-        // 4. Submit an answer 
-
-        // POST: /api/quiz/submissions
-        //[HttpPost("submissions")]
-        //public async Task<ActionResult<SubmitAnswerResponseDto>> CreateSubmission([FromBody] SubmitAnswerRequestDto request)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    if (string.IsNullOrWhiteSpace(userId))
-        //        return Unauthorized("User identity not found.");
-
-        //    try
-        //    {
-        //        var result = await _quizService.SubmitAnswerAsync(userId, request);
-        //        return Ok(result);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-
-        // POST /api/quiz/submit-answer (Temporary)
+        // 4. Submit an answer
         // POST: api/quiz/submit-answer?userId=xxx
         [HttpPost("submit-answer")]
         public async Task<IActionResult> SubmitAnswer(string userId, SubmitAnswerRequestDto request)
@@ -161,6 +92,8 @@ namespace CyberQuiz.API.Controllers
             }
         }
 
+
+        // 5. Get user progress for all subcategories (for progress bar in UI)
         //hämta (GET) userprogress : 
         [HttpGet("user-progress")]
         public async Task<ActionResult<UserProgressDto>> GetUserProgress(string userId)
@@ -172,5 +105,82 @@ namespace CyberQuiz.API.Controllers
 }
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+// 3. Return Questions of this subcategory
+
+// GET: /api/quiz/subcategories/{subCategoryId}/questions
+//[HttpGet("subcategories/{subCategoryId:int}/questions")]
+//public async Task<ActionResult<List<QuestionDto>>> GetQuestionsBySubCategoryId([FromRoute] int subCategoryId)
+//{
+//    var userId = _userManager.GetUserId(User);
+//    if (string.IsNullOrWhiteSpace(userId))
+//        return Unauthorized("User identity not found.");
+
+//    try
+//    {
+//        var result = await _quizService.GetQuestionsAsync(subCategoryId, userId);
+//        return Ok(result);
+//    }
+//    catch (ArgumentException ex)
+//    {
+//        return BadRequest(ex.Message);
+//    }
+//}
+
+
+// GET /api/quiz/questions?subCategoryId=1 (Temporary)
+//[HttpGet("questions")]
+//public async Task<ActionResult<List<QuestionDto>>> GetQuestions([FromQuery] int subCategoryId)
+//{
+//    if (!_environment.IsDevelopment())
+//        return NotFound();
+//    var userId = _userManager.GetUserId(User);
+//    if (string.IsNullOrWhiteSpace(userId))
+//        return Unauthorized("User identity not found.");
+
+//    try
+//    {
+//        var result = await _quizService.GetQuestionsAsync(subCategoryId, userId);
+//        return Ok(result);
+//    }
+//    catch (ArgumentException ex)
+//    {
+//        return BadRequest(ex.Message);
+//    }
+//}
+
+// 4. Submit an answer 
+
+// POST: /api/quiz/submissions
+//[HttpPost("submissions")]
+//public async Task<ActionResult<SubmitAnswerResponseDto>> CreateSubmission([FromBody] SubmitAnswerRequestDto request)
+//{
+//    var userId = _userManager.GetUserId(User);
+//    if (string.IsNullOrWhiteSpace(userId))
+//        return Unauthorized("User identity not found.");
+
+//    try
+//    {
+//        var result = await _quizService.SubmitAnswerAsync(userId, request);
+//        return Ok(result);
+//    }
+//    catch (ArgumentException ex)
+//    {
+//        return BadRequest(ex.Message);
+//    }
+//    catch (InvalidOperationException ex)
+//    {
+//        return BadRequest(ex.Message);
+//    }
+//}
 
