@@ -340,15 +340,10 @@ namespace CyberQuiz.BLL.Services
                 .Where(r => r.UserId == userId && questionIds.Contains(r.QuestionId))
                 .ToList();
 
-
-            //Tar "senaste" per fråga via högsta Id
-            var latestByQuestion = userResultsInSub
+            //Räknar fråga som rätt när user haft rätt en gång. Progress kan bara gå framåt, inte tillbaka.
+            var correctCount = userResultsInSub
                 .GroupBy(r => r.QuestionId)
-                .Select(g => g.OrderBy(x => x.Id).Last())
-                .ToList();
-
-            //Räknar antal rätt
-            var correctCount = latestByQuestion.Count(r => r.IsCorrect);
+                .Count(g => g.Any(r => r.IsCorrect));
 
             //Score% = correct / total * 100
             var score = CalculateScorePercent(totalQuestions, correctCount);
