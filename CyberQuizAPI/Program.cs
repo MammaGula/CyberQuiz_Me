@@ -19,7 +19,18 @@ builder.Services.AddDbContext<CyberQuizDbContext>(options =>
 
 builder.Services.AddHttpClient<AiService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:11434");
+    var baseUrl = builder.Configuration["Ai:BaseUrl"];
+    if (string.IsNullOrWhiteSpace(baseUrl))
+    {
+        throw new InvalidOperationException("AI base URL is not configured.");
+    }
+
+    client.BaseAddress = new Uri(baseUrl);
+
+    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
+    {
+        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+    }
 });
 
 // ---------------------------------------------
@@ -113,26 +124,6 @@ builder.Services.AddCors(options =>
 });
 
 // To open Swagger -> Use this port:  https://localhost:7050/swagger
-
-
-
-
-// -----------------------------
-// 6.1 Register HttpClients
-// -----------------------------
-//builder.Services.AddHttpClient<AiService>(client =>
-//{
-//    var baseUrl = builder.Configuration["Ai:BaseUrl"];
-//    if (!string.IsNullOrWhiteSpace(baseUrl))
-//    {
-//        client.BaseAddress = new Uri(baseUrl);
-//    }
-
-//    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
-//    {
-//        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
-//    }
-//});
 
 
 
