@@ -12,27 +12,15 @@ public class AiService
         _httpClient = httpClient;
     }
 
-    private class OllamaRequest
-    {
-        public string model { get; set; } = "phi3";
-        public string prompt { get; set; } = string.Empty;
-        public bool stream { get; set; } = false;
-    }
-
-    private class OllamaResponse
-    {
-        public string? model { get; set; }
-        public string? created_at { get; set; }
-        public string? response { get; set; }
-        public bool done { get; set; }
-    }
+    
 
     public async Task<string> AskAsync(string prompt, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(prompt);
 
-        var request = new OllamaRequest
+        var request = new 
         {
+            model = "phi3",
             prompt = prompt,
             stream = false
         };
@@ -42,5 +30,10 @@ public class AiService
 
         var result = await response.Content.ReadFromJsonAsync<OllamaResponse>(cancellationToken);
         return result?.response ?? string.Empty;
+    }
+
+    public class OllamaResponse
+    {
+        public string? response { get; set; }
     }
 }
