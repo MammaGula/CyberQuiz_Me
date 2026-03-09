@@ -99,6 +99,10 @@ public class CyberQuizDbContext : DbContext
 }
 
 
+
+
+
+
 // Casecade: When a Category is deleted, all related SubCategories will also be deleted. 
 
 // Restrict: When an AnswerOption is deleted, related UserResults will not be deleted, and the delete operation will be blocked if there are related UserResults.

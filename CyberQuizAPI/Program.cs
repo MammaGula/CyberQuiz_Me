@@ -19,34 +19,49 @@ builder.Services.AddDbContext<CyberQuizDbContext>(options =>
 
 builder.Services.AddHttpClient<AiService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:11434");
+    var baseUrl = builder.Configuration["Ai:BaseUrl"];
+    if (string.IsNullOrWhiteSpace(baseUrl))
+    {
+        throw new InvalidOperationException("AI base URL is not configured.");
+    }
+
+    client.BaseAddress = new Uri(baseUrl);
+
+    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
+    {
+        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+    }
 });
 
-// ---------------------------------------------
-// 2. Add Identity (Users + Roles + EF Storage)
-// ---------------------------------------------
-builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-{
-    // Password settings
-    options.Password.RequireDigit = true;              // Must contain a digit
-    options.Password.RequiredLength = 6;               // Minimum length 6 characters
-    options.Password.RequireNonAlphanumeric = false;   // Non-alphanumeric characters not required
-    options.Password.RequireUppercase = false;         // Uppercase letters not required
-    options.Password.RequireLowercase = false;         // Lowercase letters not required
-    
-    // Lockout settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // Lockout duration 5 minutes
-    options.Lockout.MaxFailedAccessAttempts = 5;                       // Lockout after 5 failed attempts
-    options.Lockout.AllowedForNewUsers = true;                         // Enable lockout for new users
-    
-    // User settings
-    options.User.RequireUniqueEmail = true;            // Email must be unique
-    
-    // SignIn settings
-    options.SignIn.RequireConfirmedEmail = false;      // Email confirmation not required (adjust as needed)
-})
-    .AddEntityFrameworkStores<CyberQuizDbContext>()
-    .AddDefaultTokenProviders();
+
+//// ---------------------------------------------
+//// 2. Add Identity (Users + Roles + EF Storage)
+//// ---------------------------------------------
+//builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+//{
+//    // Password settings
+//    options.Password.RequireDigit = true;              // Must contain a digit
+//    options.Password.RequiredLength = 6;               // Minimum length 6 characters
+//    options.Password.RequireNonAlphanumeric = false;   // Non-alphanumeric characters not required
+//    options.Password.RequireUppercase = false;         // Uppercase letters not required
+//    options.Password.RequireLowercase = false;         // Lowercase letters not required
+
+//    // Lockout settings
+//    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // Lockout duration 5 minutes
+//    options.Lockout.MaxFailedAccessAttempts = 5;                       // Lockout after 5 failed attempts
+//    options.Lockout.AllowedForNewUsers = true;                         // Enable lockout for new users
+
+//    // User settings
+//    options.User.RequireUniqueEmail = true;            // Email must be unique
+
+//    // SignIn settings
+//    options.SignIn.RequireConfirmedEmail = false;      // Email confirmation not required (adjust as needed)
+//})
+//    .AddEntityFrameworkStores<CyberQuizDbContext>()
+//    .AddDefaultTokenProviders();
+
+
+
 
 // Configure cookie behavior for API (make cookies usable from Blazor UI and return 401/403 for API calls)
 //builder.Services.ConfigureApplicationCookie(options =>
@@ -107,30 +122,12 @@ builder.Services.AddCors(options =>
               .AllowCredentials()
               .WithOrigins(
                   "https://localhost:7255",   // Blazor UI HTTPS
-                  "http://localhost:5063",    // Blazor UI HTTP
-                  "http://localhost:5275/swagger",     // API HTTP (for testing)
-                  "http://localhost:7050"     // API HTTP (for testing)
+                  "http://localhost:5063"     // Blazor UI HTTP
               );
     });
 });
 
-
-// -----------------------------
-// 6.1 Register HttpClients
-// -----------------------------
-//builder.Services.AddHttpClient<AiService>(client =>
-//{
-//    var baseUrl = builder.Configuration["Ai:BaseUrl"];
-//    if (!string.IsNullOrWhiteSpace(baseUrl))
-//    {
-//        client.BaseAddress = new Uri(baseUrl);
-//    }
-
-//    if (int.TryParse(builder.Configuration["Ai:TimeoutSeconds"], out var timeoutSeconds) && timeoutSeconds > 0)
-//    {
-//        client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
-//    }
-//});
+// To open Swagger -> Use this port:  https://localhost:7050/swagger
 
 
 
@@ -149,30 +146,30 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 var app = builder.Build();
 
 
-// -----------------------------
-// 8. Seed database on startup
-// -----------------------------
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var db = scope.ServiceProvider.GetRequiredService<CyberQuizDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//// -----------------------------
+//// 8. Seed database on startup
+//// -----------------------------
+//using (var scope = app.Services.CreateScope())
+//{
+//    try
+//    {
+//        var db = scope.ServiceProvider.GetRequiredService<CyberQuizDbContext>();
+//        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+//        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        await db.Database.MigrateAsync();
+//        await db.Database.MigrateAsync();
 
-        if (app.Environment.IsDevelopment())
-        {
-            await DbSeeder.SeedAsync(db, userManager, roleManager);
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Database error: {ex.Message}");
-        throw;
-    }
-}
+//        if (app.Environment.IsDevelopment())
+//        {
+//            await DbSeeder.SeedAsync(db, userManager, roleManager);
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine($"Database error: {ex.Message}");
+//        throw;
+//    }
+//}
 
 
 

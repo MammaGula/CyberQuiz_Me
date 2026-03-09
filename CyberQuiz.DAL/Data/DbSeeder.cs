@@ -1,5 +1,5 @@
 ﻿using CyberQuiz.DAL.Entities;
-using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -9,9 +9,9 @@ namespace CyberQuiz.DAL.Data;
 public static class DbSeeder
 {
     public static async Task SeedAsync(
-        CyberQuizDbContext db,
-        UserManager<AppUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        CyberQuizDbContext db)
+        //UserManager<AppUser> userManager,
+        //RoleManager<IdentityRole> roleManager)
     {
         ArgumentNullException.ThrowIfNull(db);
         //ArgumentNullException.ThrowIfNull(userManager);
@@ -453,14 +453,14 @@ public static class DbSeeder
         }
     }
 
-    private static void EnsureSucceeded(IdentityResult result, string message)
-    {
-        if (result.Succeeded)
-        {
-            return;
-        }
+    //private static void EnsureSucceeded(IdentityResult result, string message)
+    //{
+    //    if (result.Succeeded)
+    //    {
+    //        return;
+    //    }
 
-        var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
-        throw new InvalidOperationException($"{message} Errors: {errors}");
-    }
+    //    var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
+    //    throw new InvalidOperationException($"{message} Errors: {errors}");
+    //}
 }

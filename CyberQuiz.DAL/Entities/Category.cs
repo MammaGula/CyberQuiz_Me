@@ -9,7 +9,7 @@ public class Category
 
     [Required, MaxLength(200)]
     public string Name { get; set; } = string.Empty; // Name of the category
-    public string? Description { get; set; }
+    public string? Description { get; set; } // Optional description of the category
 
 
     //Navigation property for related subcategories

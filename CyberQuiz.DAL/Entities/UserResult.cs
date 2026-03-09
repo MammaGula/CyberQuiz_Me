@@ -43,6 +43,10 @@ public class UserResult
 
     // Navigation property for the related answerOption(one answerOption can be in many userResults)
     public AnswerOption AnswerOption { get; set; } = null!;
+
+
+    //// Navigation property for the related user (1 User-many UserResult)
+    //public AppUser User { get; set; } = null!;
 }
 
 
