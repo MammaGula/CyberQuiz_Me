@@ -168,3 +168,38 @@ h1:focus {
     padding: 15px;
     border-radius: 10px;
 }
+
+/* Topbar */
+.top-row {
+    background: linear-gradient(90deg,#0f172a,#1e293b) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: white;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #0f172a, #020617);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    color: white;
+}
+
+
+.page {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+}
+
+.sidebar a {
+    color: rgba(255,255,255,0.8);
+}
+
+    .sidebar a:hover {
+        color: white;
+    }
+
+.progress {
+    background: rgba(255,255,255,0.08);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg,#22c55e,#4ade80);
+}
