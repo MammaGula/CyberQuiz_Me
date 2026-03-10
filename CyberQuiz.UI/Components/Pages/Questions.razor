@@ -9,9 +9,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IQuizApiClient QuizApi
 
-@* =========================================
-   KOMMER ANVÄNDAS – API/BLL
-========================================= *@
+
 @inject IQuizApiClient QuizApi
 
 @rendermode InteractiveServer
@@ -29,10 +27,6 @@
 
         @* Fråga *@
         <h5>@currentQuestion.Text</h5>
-
-        @* =========================================
-           KOMMER ANVÄNDAS – API VERSION
-        ========================================= *@
         
         @foreach (var option in currentQuestion.AnswerOptions)
         {
@@ -131,30 +125,14 @@
     [Parameter]
     public int SubCategoryId { get; set; }
 
-    // =========================================
-    // SKA BORT – DUMMY DATA
-    // =========================================
-
     // Hämtar inloggad användares ID från Identity
     // Detta skickas till API så vi kan få personlig progression
     private string? userId;
 
     private QuestionDto? currentQuestion;
-    // =========================================
 
-
-    // =========================================
-    // KOMMER ANVÄNDAS – API/BLL
-    // =========================================
     private List<QuestionDto> apiQuestions = new();
 
-    //private string userId = "user"; // SKA BYTAS → Identity
-    // =========================================
-
-
-    // =========================================
-    // STATE (BEHÅLLS)
-    // =========================================
     private int? selectedAnswerId;
     private bool answered = false;
     private bool isCorrect = false;
@@ -162,12 +140,7 @@
 
     private int correctAnswers = 0;
     private bool quizFinished = false;
-    // =========================================
 
-
-    // =========================================
-    // INIT
-    // =========================================
     protected override async Task OnInitializedAsync()
     {
         //  Hämta userId från Identity
@@ -185,18 +158,11 @@
     }
 
 
-    // =========================================
-    // SELECT ANSWER
-    // =========================================
     private void SelectAnswer(int answerId)
     {
         selectedAnswerId = answerId;
     }
 
-
-    // =========================================
-    // SUBMIT
-    // =========================================
     private async Task SubmitAnswer()
     {
         var response = await QuizApi.SubmitAnswerAsync(userId!,
@@ -217,10 +183,7 @@
         StateHasChanged();
     }
 
-
-    // =========================================
     // NEXT QUESTION
-    // =========================================
     private void NextQuestion()
     {
         // Reset feedback först

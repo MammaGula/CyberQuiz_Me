@@ -16,6 +16,7 @@
 
     @foreach (var category in categoriesFromApi)
     {
+       
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card p-3 shadow-sm">
                 @*kategorierna blir ett "card"*@
@@ -41,6 +42,7 @@
                                     <small>@sub.QuestionCount questions</small>
                                 </div>
 
+                                @*Visar status för subcategory*@
                                 <span>
                                     @(sub.IsLocked ? "🔒" :
                                                             sub.IsCompleted ? "✅" : "⭕")
@@ -69,20 +71,24 @@
 
     private string? userId; //kopplar till användare
 
+    //lista med kategorier
     private List<CategoryDto> categoriesFromApi = new();
+
+    //Lagrar subkategorier somr är expanderad i UI
     private Dictionary<int, List<SubCategoryDto>> subCategoriesMap = new();
 
+    //Vilken kategori som är expanderad
     private int? expandedCategoryId;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync(); //hämtar user
+        //hämtar informationen om inloggad användare - Identity
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value; //användare hämtas
 
-        Console.WriteLine($"USER ID: {userId}");
-
+        //hämtar kategorierna
         if (userId != null)
         {
             categoriesFromApi = await QuizApi.GetCategoriesAsync(userId);
@@ -99,6 +105,7 @@
         {
             expandedCategoryId = categoryId;
 
+            //om subkategorier inte redan laddats hämtas dom från API
             if (!subCategoriesMap.ContainsKey(categoryId))
             {
                 var subs = await QuizApi.GetSubCategoriesAsync(categoryId, userId!);
