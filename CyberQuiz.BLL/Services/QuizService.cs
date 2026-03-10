@@ -250,6 +250,7 @@ namespace CyberQuiz.BLL.Services
                 var allDone = true;
                 foreach (var sub in subsInCat)
                 {
+                    //Alla subkategorier i kategorin måste vara klara för att kategorin ska räknas som klar
                     var p = await GetSubCategoryProgressAsync(userId, sub.Id);
                     if (!p.IsCompleted) { allDone = false; break; }
                 }
@@ -265,12 +266,14 @@ namespace CyberQuiz.BLL.Services
                 TotalCategories = totalCategories,
                 CompletedCategories = completedCategories,
 
-                //procent
+                //procent för progress 
                 OverallPercent = totalSubCategories == 0
                 ? 0 
                 : Math.Round((Double)completedSubCategories / totalSubCategories * 100, 2)
             };
         }
+
+
 
         //-------------------------------------------------------------------------------------------
         //--------------------------Interna hjälpmetoder---------------------------------------------
@@ -282,18 +285,18 @@ namespace CyberQuiz.BLL.Services
         //Intern hjälpmetod för att beräkna vilka subkategorier som är låsta för användaren
         private async Task<HashSet<int>> ComputeLockedSubCategoriesAsync(string userId, List<SubCategory> orderedSubs)
         {
-            //Returnerar vilka subCategoryId som är låsta för användaren
+            //Skapar tom "locked" samling
             var locked = new HashSet<int>();
-            if(orderedSubs.Count == 0) return locked;
+            if(orderedSubs.Count == 0) return locked; //Om inga subkategorier -> ingen är låst
 
             //För varje SubCategory efter första, kolla om föregående är completed
             for (int i = 1; i < orderedSubs.Count; i++)
             {
-                var prevSubId = orderedSubs[i - 1].Id;
+                var prevSubId = orderedSubs[i - 1].Id; 
                 var prevProgress = await GetSubCategoryProgressAsync(userId, prevSubId);
 
                 if(!prevProgress.IsCompleted)
-                    locked.Add(orderedSubs[i].Id);
+                    locked.Add(orderedSubs[i].Id); //Om prevSub !completed -> lås nuvarande subkategori
             }
             return locked;
         }
@@ -302,14 +305,14 @@ namespace CyberQuiz.BLL.Services
         //Hjälpmetod för att sätta IsLocked på subkategorier baserat på progress
         private static void ApplyLockStates(List<SubCategoryDto> subsOrdered, Dictionary<int, SubProgress> progressBySubId)
         {
-            // Skydd om listan är tom
+            //Skydd om listan är tom
             if (subsOrdered == null || subsOrdered.Count == 0)
                 return;
 
-            // Första subkategorin är alltid upplåst
+            //Första subkategorin är alltid upplåst
             subsOrdered[0].IsLocked = false;
 
-            // Resten låses upp när föregående är completed (>= 80%)
+            //Resten låses upp när föregående är completed (>= 80%)
             for (int i = 1; i < subsOrdered.Count; i++)
             {
                 var prev = subsOrdered[i - 1];
@@ -324,21 +327,29 @@ namespace CyberQuiz.BLL.Services
         {
             //Hämtar Questions för att få total antal frågor i subkategorin
             var questions = await _uow.Questions.GetAllAsync();
+            //Filtrerar frågor som tillhör subkategorin
             var questionsInSub = questions.Where(q => q.SubCategoryId == subCategoryId).ToList();
+            //Totalt antal frågor i subkategorin
             var totalQuestions = questionsInSub.Count;
 
-            //Hämtar UserResults och filtrerar till denna subkategori
+            //Hämtar UserResults 
             var results = await _uow.UserResults.GetAllAsync();
+
+            //Skapar en "snabb lista" med alla QuestionId i subkategorin 
             var questionIds = new HashSet<int>(questionsInSub.Select(q => q.Id));
 
+            //Filtrerar UserResults för aktuell userId och subkategori
             var userResultsInSub = results
                 .Where(r => r.UserId == userId && questionIds.Contains(r.QuestionId))
                 .ToList();
 
-            //Räknar fråga som rätt när user haft rätt en gång. Progress kan bara gå framåt, inte tillbaka.
+
+            //Räknar fråga som rätt när user haft rätt en gång. Progress kan bara gå framåt
             var correctCount = userResultsInSub
-                .GroupBy(r => r.QuestionId)
-                .Count(g => g.Any(r => r.IsCorrect));
+
+                .GroupBy(r => r.QuestionId) //Grupperar UserResults per QuestionId
+
+                .Count(g => g.Any(r => r.IsCorrect)); //Räknar en fråga som rätt om MINST en UserResult i gruppen är korrekt
 
             //Score% = correct / total * 100
             var score = CalculateScorePercent(totalQuestions, correctCount);
