@@ -27,36 +27,14 @@ public class UserResultRepository : IUserResultRepository
             .ToListAsync(cancellationToken);
 
 
-    // Returns a UserResult by its Id, or null if not found
-    public async Task<UserResult?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        => await _db.UserResults.FindAsync([id], cancellationToken);
-
-
-    // Returns a UserResult with the related question, subcategory and selected answer option
-    public async Task<UserResult?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken = default)
-        => await _db.UserResults
-            .AsNoTracking()
-            .Include(r => r.Question)
-                .ThenInclude(q => q.SubCategory)
-            .Include(r => r.AnswerOption)
-            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
-
-
-    // Returns all matching results for a specific user and set of question ids
-    public async Task<List<UserResult>> GetByUserAndQuestionIdsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default)
+    // Returns all matching results for a specific user in one subcategory
+    public async Task<List<UserResult>> GetByUserAndSubCategoryAsync(string userId, int subCategoryId, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
-        ArgumentNullException.ThrowIfNull(questionIds);
-
-        var questionIdArray = questionIds.Distinct().ToArray();
-        if (questionIdArray.Length == 0)
-        {
-            return new List<UserResult>();
-        }
 
         return await _db.UserResults
             .AsNoTracking()
-            .Where(r => r.UserId == userId && questionIdArray.Contains(r.QuestionId))
+            .Where(r => r.UserId == userId && r.Question.SubCategoryId == subCategoryId)
             .OrderBy(r => r.Id)
             .ToListAsync(cancellationToken);
     }
@@ -120,35 +98,36 @@ public class UserResultRepository : IUserResultRepository
             return new List<UserResult>();
         }
 
-        return await _db.UserResults
-            .AsNoTracking()
-            .Where(r => r.UserId == userId && questionIdArray.Contains(r.QuestionId))
-            .GroupBy(r => r.QuestionId)
-            .Select(g => g.OrderByDescending(x => x.Id).First())
-            .ToListAsync(cancellationToken);
-    }
+        var latestIds = await GetLatestResultIdsForUserAndQuestionIdsAsync(userId, questionIdArray, cancellationToken);
 
-
-    // Returns the latest UserResult per QuestionId with the related question, subcategory and selected answer option
-    public async Task<List<UserResult>> GetLatestResultsForUserAndQuestionIdsWithDetailsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
-        ArgumentNullException.ThrowIfNull(questionIds);
-
-        var questionIdArray = questionIds.Distinct().ToArray();
-        if (questionIdArray.Length == 0)
+        if (latestIds.Count == 0)
         {
             return new List<UserResult>();
         }
 
         return await _db.UserResults
             .AsNoTracking()
-            .Where(r => r.UserId == userId && questionIdArray.Contains(r.QuestionId))
-            .GroupBy(r => r.QuestionId)
-            .Select(g => g.OrderByDescending(x => x.Id).First())
-            .Include(r => r.Question)
-                .ThenInclude(q => q.SubCategory)
-            .Include(r => r.AnswerOption)
+            .Where(r => latestIds.Contains(r.Id))
+            .OrderBy(r => r.QuestionId)
+            .ToListAsync(cancellationToken);
+    }
+
+
+    // Returns the latest UserResult per QuestionId for a specific user in one subcategory
+    public async Task<List<UserResult>> GetLatestResultsForUserAndSubCategoryAsync(string userId, int subCategoryId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
+        var latestIds = await GetLatestResultIdsForUserAndSubCategoryAsync(userId, subCategoryId, cancellationToken);
+        if (latestIds.Count == 0)
+        {
+            return new List<UserResult>();
+        }
+
+        return await _db.UserResults
+            .AsNoTracking()
+            .Where(r => latestIds.Contains(r.Id))
+            .OrderBy(r => r.QuestionId)
             .ToListAsync(cancellationToken);
     }
 
@@ -165,6 +144,40 @@ public class UserResultRepository : IUserResultRepository
         ArgumentNullException.ThrowIfNull(result);
         _db.UserResults.Remove(result);
     }
+
+
+    // Finds the latest result id per question for a user and a selected set of question ids
+    private async Task<List<int>> GetLatestResultIdsForUserAndQuestionIdsAsync(string userId, IReadOnlyCollection<int> questionIds, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentNullException.ThrowIfNull(questionIds);
+
+        if (questionIds.Count == 0)
+        {
+            return new List<int>();
+        }
+
+        return await _db.UserResults
+            .AsNoTracking()
+            .Where(r => r.UserId == userId && questionIds.Contains(r.QuestionId))
+            .GroupBy(r => r.QuestionId)
+            .Select(g => g.Max(r => r.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+
+    // Finds the latest result id per question for a user inside one subcategory
+    private async Task<List<int>> GetLatestResultIdsForUserAndSubCategoryAsync(string userId, int subCategoryId, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
+        return await _db.UserResults
+            .AsNoTracking()
+            .Where(r => r.UserId == userId && r.Question.SubCategoryId == subCategoryId)
+            .GroupBy(r => r.QuestionId)
+            .Select(g => g.Max(r => r.Id))
+            .ToListAsync(cancellationToken);
+    }
 }
 
 
@@ -175,10 +188,3 @@ public class UserResultRepository : IUserResultRepository
 // Avoids duplicate database queries for the same question id when checking progress or correctness of answers.
 
 
-// .AsSplitQuery(): Separate queries when including related entities with Entity Framework.
-
-
-// .SingleOrDefaultAsync(): retrieves a single entity that matches a specified condition,
-// or returns null if no such entity exists.
-// If more than one entity matches the condition, it throws an exception.
-// This is useful when you expect either zero or one result and want to ensure that you don't accidentally get multiple results.

@@ -11,7 +11,7 @@ public class Question
     public string Text { get; set; } = string.Empty; // Text of the question
 
     public int SubCategoryId { get; set; }  // FK : to the related subcategory
-    public int Points { get; set; } // Points awarded for answering this question correctly
+    public int Points { get; set; } = 1; // Points awarded for answering this question correctly
 
 
 
