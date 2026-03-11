@@ -1,14 +1,18 @@
 using CyberQuiz.BLL.Interfaces;
 using CyberQuiz.BLL.Services;
 using CyberQuiz.DAL.Data;
-using CyberQuiz.DAL.Entities;
 using CyberQuiz.DAL.Repositories;
 using CyberQuiz.DAL.Repositories.Interfaces;
 using CyberQuiz.API.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var allowedCorsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+if (allowedCorsOrigins.Length == 0)
+{
+    throw new InvalidOperationException("No CORS origins are configured.");
+}
 
 // -----------------------------
 // 1. Add DbContext (SQL Server)
@@ -120,10 +124,7 @@ builder.Services.AddCors(options =>
         policy.AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()
-              .WithOrigins(
-                  "https://localhost:7255",   // Blazor UI HTTPS
-                  "http://localhost:5063"     // Blazor UI HTTP
-              );
+              .WithOrigins(allowedCorsOrigins);
     });
 });
 
@@ -146,30 +147,20 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 var app = builder.Build();
 
 
-//// -----------------------------
-//// 8. Seed database on startup
-//// -----------------------------
-//using (var scope = app.Services.CreateScope())
-//{
-//    try
-//    {
-//        var db = scope.ServiceProvider.GetRequiredService<CyberQuizDbContext>();
-//        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-//        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+// -----------------------------
+// 8. Apply migrations and seed quiz data on startup
+// -----------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<CyberQuizDbContext>();
 
-//        await db.Database.MigrateAsync();
+    await db.Database.MigrateAsync();
 
-//        if (app.Environment.IsDevelopment())
-//        {
-//            await DbSeeder.SeedAsync(db, userManager, roleManager);
-//        }
-//    }
-//    catch (Exception ex)
-//    {
-//        Console.WriteLine($"Database error: {ex.Message}");
-//        throw;
-//    }
-//}
+    if (app.Environment.IsDevelopment())
+    {
+        await DbSeeder.SeedAsync(db);
+    }
+}
 
 
 

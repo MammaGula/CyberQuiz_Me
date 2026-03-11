@@ -1,19 +1,20 @@
 ﻿using CyberQuiz.API.Services;
 using CyberQuiz.Shared.AI;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace CyberQuiz.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[AllowAnonymous]
+
 public class AiController : ControllerBase
 {
     private readonly AiService _ai;
 
     public AiController(AiService ai)
     {
+        ArgumentNullException.ThrowIfNull(ai);
         _ai = ai;
     }
 
