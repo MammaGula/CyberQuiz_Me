@@ -12,9 +12,19 @@ public interface IUserResultRepository
     // Returns all results for a given user in a specific subcategory
     Task<List<UserResult>> GetByUserAndSubCategoryAsync(string userId, int subCategoryId, CancellationToken cancellationToken = default);
 
+    
+    // Returns matching results with the related question, subcategory and selected answer option
+    Task<List<UserResult>> GetByUserAndQuestionIdsWithDetailsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default);
+
+   
     // Returns only question ids that the user has answered correctly at least once
     Task<HashSet<int>> GetCorrectQuestionIdsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default);
 
+    
+    // Returns latest UserResult per QuestionId for a given user and set of questionIds
+    Task<List<UserResult>> GetLatestResultsForUserAndQuestionIdsAsync(string userId, IEnumerable<int> questionIds, CancellationToken cancellationToken = default);
+
+    
     // Returns latest UserResult per QuestionId for a given user in a specific subcategory
     Task<List<UserResult>> GetLatestResultsForUserAndSubCategoryAsync(string userId, int subCategoryId, CancellationToken cancellationToken = default);
 
