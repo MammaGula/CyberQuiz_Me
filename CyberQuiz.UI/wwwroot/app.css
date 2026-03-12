@@ -80,13 +80,14 @@ h1:focus {
 
 .home-wrapper {
     /* Gör att sektionen täcker nästan hela viewportens höjd */
-    min-height: 90vh;
+    min-height: 100vh;
     /* Flex används för att centrera innehållet */
     display: flex;
     justify-content: center; /* horisontellt */
-    align-items: center; /* vertikalt */
+    align-items: flex-start; /* vertikalt */
     /* Mörk gradient-bakgrund för modern look */
     background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding-top: 80px;
 }
 
 .hero-card {
@@ -102,6 +103,7 @@ h1:focus {
     width: 90%;
     /* Djupskugga för modern känsla */
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    overflow: visible;
 }
 
 .hero-title {
@@ -115,6 +117,26 @@ h1:focus {
     font-size: 1.1rem;
 }
 
+.categories-card {
+    max-width: 1200px; /* mycket bredare än home */
+    width: 95%;
+    min-height: 450px;
+}
+
+.category-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: white;
+    min-height: 120px;
+    transition: all 0.2s ease;
+}
+
+.list-group-item {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+}
+
 /* Progress i navbar */
 
 .progress-wrapper {
@@ -126,4 +148,62 @@ h1:focus {
 .progress-label {
     font-size: 0.8rem;
     color: #555;
+}
+
+.quiz-card {
+    background: rgba(255,255,255,0.06);
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+}
+
+.quiz-option {
+    background: rgba(255,255,255,0.04);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.ai-helper {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* Topbar */
+.top-row {
+    background: linear-gradient(90deg,#0f172a,#1e293b) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: white;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #0f172a, #020617);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    color: white;
+}
+
+
+.page {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+}
+
+.sidebar a {
+    color: rgba(255,255,255,0.8);
+}
+
+    .sidebar a:hover {
+        color: white;
+    }
+
+.progress {
+    background: rgba(255,255,255,0.08);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg,#22c55e,#4ade80);
+}
+
+.content {
+    color: white;
 }
