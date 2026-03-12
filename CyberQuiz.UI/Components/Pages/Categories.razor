@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @using CyberQuiz.Shared.DTOs
 @using System.Security.Claims
+@using CyberQuiz.UI.Components.Account.Pages.Manage
 @using CyberQuiz.UI.Services
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
@@ -10,18 +11,21 @@
 
 @rendermode InteractiveServer
 
-<h3 class="mb-4 text-center">Categories</h3>
+<div class="home-wrapper">
 
-<div class="row g-4">
+    <div class="hero-card categories-card">
 
-    @foreach (var category in categoriesFromApi)
-    {
-       
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card p-3 shadow-sm">
-                @*kategorierna blir ett "card"*@
+        <h3 class="mb-4">Categories</h3>
 
-                <h5>@category.Name</h5>
+        <div class="row g-4">
+
+            @foreach (var category in categoriesFromApi)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card category-card p-3 shadow-sm">
+
+                        <h5>@category.Name</h5>
 
                 <button class="btn btn-primary mt-2"
                         @onclick="() => ToggleCategory(category.Id)">
@@ -65,6 +69,8 @@
         </div>
     }
 
+</div>
+</div>
 </div>
 
 @code {

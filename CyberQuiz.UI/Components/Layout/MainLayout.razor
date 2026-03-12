@@ -1,9 +1,12 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using CyberQuiz.UI.Data
+@using Microsoft.AspNetCore.Components.Authorization
 @using CyberQuiz.Shared.DTOs
 @using System.Security.Claims
 @using CyberQuiz.UI.Services
+@using Microsoft.AspNetCore.Identity
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IQuizApiClient QuizApi
+@inject UserManager<ApplicationUser> UserManager
 @inherits LayoutComponentBase
 
 <div class="page">
@@ -12,7 +15,7 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-flex align-items-center">
+        <div class="top-row px-4 py-2 d-flex align-items-center">
 
             <!--Visar olika beroende på vem som är inloggad eller om user ens är inloggad-->
             <AuthorizeView>
@@ -20,7 +23,7 @@
                 <Authorized Context="auth">
 
                     <div class="me-auto">
-                        👤 @auth.User.Identity?.Name
+                        👤 @userEmail
                     </div>
                 
                     @if (progress != null)
@@ -72,6 +75,8 @@
 
 @code {
 
+    private string? userEmail;
+
     //Variabel som lagrar progressdata från API
     private UserProgressDto? progress;
 
@@ -80,14 +85,17 @@
     {
         //använder blazor identity för authentisering
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        var userPrincipal = authState.User;
 
         //user Id för unik progress overview
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = userPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (userId != null)
         {
             progress = await QuizApi.GetUserProgressAsync(userId);
+
+            var user = await UserManager.GetUserAsync(userPrincipal);
+            userEmail = user?.Email;
         }
     }
 
