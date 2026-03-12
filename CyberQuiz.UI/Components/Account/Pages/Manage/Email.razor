@@ -1,5 +1,6 @@
 ﻿@page "/Account/Manage/Email"
 
+@rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using CyberQuiz.UI.Data
@@ -18,7 +19,7 @@
     <div class="alert alert-info">@message</div>
 }
 
-<EditForm Model="Input" FormName="change-email" OnValidSubmit="ChangeEmailAsync">
+<EditForm Model="Input" OnValidSubmit="ChangeEmailAsync">
     <DataAnnotationsValidator />
     <ValidationSummary class="text-danger" />
 
@@ -55,12 +56,14 @@
 
     private async Task ChangeEmailAsync()
     {
-        if (user == null)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var currentUser = await UserManager.GetUserAsync(authState.User);
+
+        if (currentUser == null)
             return;
 
-        user.Email = Input.NewEmail;
-
-        var result = await UserManager.UpdateAsync(user);
+        var token = await UserManager.GenerateChangeEmailTokenAsync(currentUser, Input.NewEmail);
+        var result = await UserManager.ChangeEmailAsync(currentUser, Input.NewEmail, token);
 
         if (!result.Succeeded)
         {
@@ -68,9 +71,10 @@
             return;
         }
 
-        await SignInManager.RefreshSignInAsync(user);
-
         message = "Email updated successfully.";
+
+        
+        NavigationManager.NavigateTo("/Account/Manage/Email", forceLoad: true);
     }
 
     private class InputModel

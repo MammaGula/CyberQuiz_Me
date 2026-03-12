@@ -28,6 +28,16 @@
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Username"
+                           id="Input.Username"
+                           class="form-control"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="username" />
+                <label for="Input.Username">Username</label>
+                <ValidationMessage For="() => Input.Username" class="text-danger" />
+            </div>                      
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label for="Input.Email">Email</label>
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
@@ -74,7 +84,7 @@
     {
         var user = CreateUser();
 
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        await UserStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
         var result = await UserManager.CreateAsync(user, Input.Password);
@@ -133,6 +143,10 @@
 
     private sealed class InputModel
     {
+
+        [Required]
+        public string Username { get; set; } = "";
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
