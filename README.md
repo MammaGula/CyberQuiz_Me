@@ -267,7 +267,7 @@ cd C:\Users\supap\Desktop\Github_Projects\CyberQuiz\CyberQuiz.UI
 dotnet ef database update
 ```
 
-## Suggested future improvements 🔮
+## Future improvements 🔮
 
 - Add automated unit and integration tests
 - Add role-based authorization for admin content management
