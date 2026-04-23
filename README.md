@@ -1,16 +1,16 @@
+
+
 # CyberQuiz 🎯
 
 CyberQuiz is a web-based quiz application built for cybersecurity learning. It is designed to give users a simple and interactive way to register, sign in, practice their knowledge, and follow their progress over time. The solution is structured as a multi-project .NET 10 application with a Blazor UI, a Web API, a business logic layer, a data access layer, and shared contracts between projects.
 
-## Background 🧠
-
-CyberQuiz was created from a school project assignment where the goal was to build a modern, user-friendly, and secure web application for cybersecurity training. The app should allow users to log in, work through quizzes in different topic areas, and gradually unlock new content based on their results.
-
-The project also reflects real-world development challenges that are highly relevant today, such as authentication, API communication, secure data handling, layered architecture, and cloud-oriented application design.
-
 ## Project conclusion 📘
 
 The purpose of CyberQuiz is to make cybersecurity learning more interactive, structured, and motivating. Instead of only reading theory, users actively test their knowledge through multiple-choice questions, get immediate feedback, and build progress step by step. By separating the solution into UI, API, BLL, DAL, and Shared projects, the application stays easier to understand, maintain, and extend.
+<img width="2829" height="1522" alt="StartPage" src="https://github.com/user-attachments/assets/d0159748-8bf4-4910-87ab-7abc9df2b975" />
+<img width="2323" height="1429" alt="QuizPage" src="https://github.com/user-attachments/assets/a15e6884-8489-4ed1-b04e-ec11a594ecbf" />
+<img width="1536" height="1024" alt="CyberQuiz ER Diagram" src="https://github.com/user-attachments/assets/52823d15-09cf-4531-88f9-b66f9c0a008b" />
+
 
 ## What the project delivers 📦
 
