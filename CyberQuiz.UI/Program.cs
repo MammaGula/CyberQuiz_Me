@@ -71,6 +71,10 @@ app.MapAdditionalIdentityEndpoints();
 //user till hassan:
 using (var scope = app.Services.CreateScope())
 {
+    // Ensure database schema is up-to-date before accessing Identity stores
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     var username = "User";
