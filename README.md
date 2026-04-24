@@ -7,9 +7,11 @@ CyberQuiz is a web-based quiz application built for cybersecurity learning. It i
 ## Project conclusion 📘
 
 The purpose of CyberQuiz is to make cybersecurity learning more interactive, structured, and motivating. Instead of only reading theory, users actively test their knowledge through multiple-choice questions, get immediate feedback, and build progress step by step. By separating the solution into UI, API, BLL, DAL, and Shared projects, the application stays easier to understand, maintain, and extend.
-<img width="500" height="300" alt="StartPage" src="https://github.com/user-attachments/assets/d0159748-8bf4-4910-87ab-7abc9df2b975" />
-<img width="500" height="300" alt="QuizPage" src="https://github.com/user-attachments/assets/a15e6884-8489-4ed1-b04e-ec11a594ecbf" />
-<img width="535" height="300" alt="CyberQuiz ER Diagram" src="https://github.com/user-attachments/assets/52823d15-09cf-4531-88f9-b66f9c0a008b" />
+<img width="500" height="300" alt="Home" src="https://github.com/user-attachments/assets/5c0ef0e2-d3e1-4fce-b23d-64eaa83289ed" />
+<img width="500" height="300" alt="QuizPage" src="https://github.com/user-attachments/assets/482e16c1-23e9-4c23-88b4-0a4fb715e183" />
+
+<img width="500" height="300" alt="CyberQuiz ER Diagram" src="https://github.com/user-attachments/assets/8916c6b7-eb0a-48ce-895c-274785b8b40a" />
+
 
 
 ## What the project delivers 📦
